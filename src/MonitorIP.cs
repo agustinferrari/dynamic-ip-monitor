@@ -87,7 +87,7 @@ public class MonitorWindow : Form {
         advancedButton = ButtonAt(L.T("Mostrar ajustes avanzados"), 24, 535, 280);
         advancedButton.TabIndex = 5;
         advancedButton.Click += delegate { ToggleAdvanced(); };
-        advancedPanel = new Panel { Location = new Point(24,583), Size = new Size(632,207), Visible = false, TabIndex = 6 };
+        advancedPanel = new Panel { Location = new Point(24,583), Size = new Size(632,207), Visible = false, TabIndex = 7 };
         Controls.Add(advancedPanel);
 
         Label referenceTitle = LabelAt(L.T("Inicio de sesion (hora local):"), 0, 0, 350, 26);
@@ -105,9 +105,9 @@ public class MonitorWindow : Form {
         top = new CheckBox { Text = L.T("Siempre visible"), Location = new Point(310,125), AutoSize = true, TabIndex = 4 };
         top.CheckedChanged += delegate { TopMost = top.Checked; };
         advancedPanel.Controls.Add(top);
-        startup = new CheckBox { Text = L.T("Iniciar con Windows"), Location = new Point(0,125), AutoSize = true, Checked = IsStartup(), TabIndex = 3 };
+        startup = new CheckBox { Text = L.T("Iniciar con Windows"), Location = new Point(340,541), AutoSize = true, Checked = IsStartup(), TabIndex = 6 };
         startup.CheckedChanged += StartupChanged;
-        advancedPanel.Controls.Add(startup);
+        Controls.Add(startup);
         Button dataFolder = ButtonAt(L.T("Abrir mis datos"), 0, 164, 200);
         advancedPanel.Controls.Add(dataFolder); dataFolder.TabIndex = 5;
         dataFolder.Click += delegate { System.Diagnostics.Process.Start("explorer.exe", "\"" + Dir + "\""); };

@@ -13,14 +13,14 @@ Useful before starting a race or an online match.
 
 *Icons enlarged to show the colors and units displayed next to the Windows clock.*
 
-**Version 0.5.0-beta.** Direct session reading has been tested with an **Antel ZTE
+**Version 0.5.1-beta.** Direct session reading has been tested with an **Antel ZTE
 F6600**. Other models or firmware may need a different adapter. Public IP monitoring
 works with other routers, with less accurate timing. This is an independent
 project, not affiliated with Antel or ZTE.
 
 ## Download and start
 
-1. Open this repository's **Releases** and download `DynamicIPMonitor-0.5.0-beta-windows.zip`.
+1. Open this repository's **Releases** and download `DynamicIPMonitor-0.5.1-beta-windows.zip`.
 2. Extract the ZIP and run `DynamicIPMonitor.exe`.
 3. Choose **Settings → Language**: Español, English, or Automatic (Windows).
 4. Allow router reading if you have a compatible F6600. Check its local URL;
@@ -120,8 +120,10 @@ Licensed under [MIT](LICENSE).
 
 Below the countdown, use **Keep in system tray**, **Refresh now**, or **Settings**.
 **Refresh now** reads the connection without waiting for the next automatic poll.
-Manual reference, cycle length, Windows startup, and local files are under
+Manual reference, cycle length, and local files are under
 **Show advanced settings**. Router restart has a separate section with a warning.
+The **Start with Windows** checkbox is always visible in the main window.
+When enabled, the app opens in the system tray when you sign in to Windows.
 
 ## Restarting the router
 

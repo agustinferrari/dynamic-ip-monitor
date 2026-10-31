@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 0.5.1-beta
+
+- La casilla Iniciar con Windows queda visible en la ventana principal, fuera de los ajustes avanzados.
+- Se conserva el inicio en bandeja y la preferencia de cada usuario.
+- Capturas y documentación actualizadas.
+
 ## 0.5.0-beta
 
 - Acciones de uso diario debajo del contador, con mayor prioridad para seguir en bandeja.

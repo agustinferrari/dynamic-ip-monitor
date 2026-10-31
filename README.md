@@ -13,7 +13,7 @@ Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
 *Íconos ampliados para mostrar los colores y las unidades que aparecen junto al reloj de Windows.*
 
-**Versión 0.5.0-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
+**Versión 0.5.1-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
 Otros modelos o versiones del firmware pueden requerir otro adaptador. El modo
 de IP pública permite usar el monitor con otros routers, con menor precisión.
 Proyecto independiente, sin afiliación con Antel ni ZTE.
@@ -25,7 +25,7 @@ se guarda localmente. Incluye interfaz, menús de bandeja, avisos y fechas.
 
 ## Descargar y usar
 
-1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.5.0-beta-windows.zip`.
+1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.5.1-beta-windows.zip`.
 2. Extraé el ZIP en una carpeta y ejecutá `DynamicIPMonitor.exe`.
 3. En la primera apertura elegí si autorizás la lectura de tu router o preferís solo IP pública.
 4. Si usás un F6600 compatible, revisá su dirección. El valor sugerido es `http://192.168.1.1/`.
@@ -49,12 +49,13 @@ que la hora estimada ya pasó. Si Windows lo oculta, arrastralo desde el menú d
 
 Debajo del contador tenés **Seguir en bandeja**, **Actualizar ahora** y **Configurar**.
 **Actualizar ahora** consulta el estado sin esperar la próxima lectura automática.
-La referencia manual, el ciclo, el inicio con Windows y los archivos locales están
+La referencia manual, el ciclo y los archivos locales están
 en **Mostrar ajustes avanzados**. El reinicio del router tiene un bloque separado.
 
 Cerrar con la X mantiene el monitor en la bandeja junto al reloj. Para detenerlo:
 clic derecho en el ícono → **Salir y detener monitoreo**.
-La casilla **Iniciar con Windows** configura el inicio para tu usuario.
+La casilla **Iniciar con Windows**, visible en la ventana principal, configura el inicio
+para tu usuario. Al iniciar sesión en Windows, el monitor se abre en la bandeja junto al reloj.
 Si movés el ejecutable, desmarcá y volvé a marcar esa casilla.
 
 El botón **Reiniciar router** está disponible con la lectura del ZTE habilitada.
