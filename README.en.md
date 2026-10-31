@@ -9,7 +9,7 @@ Useful before starting a race or an online match.
 
 *Application preview with example data.*
 
-![Tray states: hours in green and yellow, minutes and seconds in red, expired estimate, and no reference](assets/tray-states-en.png)
+![Tray states: hours in green and yellow, minutes in red, expired estimate, and no reference](assets/tray-states-en.png)
 
 *Icons enlarged to show the colors and units displayed next to the Windows clock.*
 

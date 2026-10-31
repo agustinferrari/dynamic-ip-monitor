@@ -9,7 +9,7 @@ Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
 *Vista de la aplicación con datos de ejemplo.*
 
-![Estados del ícono: horas en verde y amarillo, minutos y segundos en rojo, estimación vencida y falta de referencia](assets/tray-states-es.png)
+![Estados del ícono: horas en verde y amarillo, minutos en rojo, estimación vencida y falta de referencia](assets/tray-states-es.png)
 
 *Íconos ampliados para mostrar los colores y las unidades que aparecen junto al reloj de Windows.*
 
