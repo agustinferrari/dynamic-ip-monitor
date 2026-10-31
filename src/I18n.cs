@@ -18,7 +18,7 @@ public static class L {
         Thread.CurrentThread.CurrentCulture = Culture;
         Thread.CurrentThread.CurrentUICulture = Culture;
     }
-    static readonly string[,] Entries = {
+    internal static readonly string[,] Entries = {
         {"Automático (Windows)","Automatic (Windows)"},
         {"Idioma","Language"},
         {"Configurar Dynamic IP Monitor","Configure Dynamic IP Monitor"},
@@ -31,7 +31,6 @@ public static class L {
         {"Si dejás usuario y contraseña vacíos, usa los valores precargados\npor el panel, si existen. Una clave propia se protege con Windows.\nSolo IP pública también funciona: desmarcá la lectura del router.\nEl ciclo de 12 h es estimado; podés ajustarlo en el contador.","Leave credentials blank to use values prefilled by the router,\nif available. Your own password is protected by Windows.\nFor public IP only, leave router reading unchecked.\nThe 12-hour cycle is an estimate; adjust it in the main window."},
         {"Guardar","Save"}, {"Cancelar","Cancel"},
         {"No se pudo guardar","Could not save"},
-        {"Configuracion invalida","Invalid configuration"},
         {"Usa una URL local como http://192.168.1.1/","Use a local URL such as http://192.168.1.1/"},
         {"La direccion del router debe ser una IPv4 privada de tu red local.","The router address must be a private IPv4 address on your local network."},
         {"Esperando la primera lectura...","Waiting for the first reading..."},
@@ -57,7 +56,7 @@ public static class L {
         {"No se pudo leer estado.json. Hace falta obtener una nueva referencia.","Could not read estado.json. A new reference is needed."},
         {"Sin referencia: configura el router o indica una hora","No reference: configure the router or enter a time"},
         {"No se pudo guardar el estado: ","Could not save state: "},
-        {"Respuesta IPv4 invalida","Invalid IPv4 response"}, {"IP no publica","Non-public IP address"},
+        {"IP no publica","Non-public IP address"},
         {"Las fuentes no coinciden; se reintentara","Sources disagree; will retry"},
         {"Sin lectura de IP. Se reintentara; el contador sigue siendo estimado.","No IP reading. Will retry; the countdown is still an estimate."},
         {"Router ZTE: ","ZTE router: "},
@@ -83,7 +82,7 @@ public static class L {
         {"Dynamic IP Monitor - faltan ","Dynamic IP Monitor - remaining "},
         {"Dynamic IP Monitor - estimacion vencida","Dynamic IP Monitor - estimate expired"},
         {"Se alcanzo la hora estimada","Estimated time reached"},
-        {"Posible reconexion en ","Possible reconnection in "}, {" minutos"," minutes"},
+        {"Posible reconexion en ","Possible reconnection in "},
         {"Todavia no se detecto otro cambio de IP. La estimacion puede haber variado.","No further IP change detected yet. The estimate may have shifted."},
         {"Evita iniciar una carrera larga cerca del cambio estimado.","Avoid starting a long race near the estimated change."},
         {"No se pudo cambiar el inicio automatico: ","Could not change automatic startup: "},
@@ -110,15 +109,6 @@ public static class L {
     public static string Source(string text) { if (text == null) return ""; string source; return Spanish.TryGetValue(text,out source) ? source : text; }
     public static string T(string text) { string translated; string source=Source(text); return Current == "en" && English.TryGetValue(source,out translated) ? translated : source; }
     public static string Minutes(int count) { return count.ToString(Culture) + (Current == "es" ? count == 1 ? " minuto" : " minutos" : count == 1 ? " minute" : " minutes"); }
-    public static string Dynamic(string text) {
-        text=T(text);
-        for (int i=0;i<Entries.GetLength(0);i++) {
-            string other=Entries[i,Current == "es" ? 1 : 0], translated=Entries[i,Current == "es" ? 0 : 1];
-            if (text.StartsWith(other,StringComparison.Ordinal)) text=translated + text.Substring(other.Length);
-            if (text.EndsWith(other,StringComparison.Ordinal)) text=text.Substring(0,text.Length-other.Length) + translated;
-        }
-        return text;
-    }
     public static void Capture(Control root) {
         if (root is Form || root is Label || root is Button || root is CheckBox) root.Tag=Source(root.Text);
         foreach (Control child in root.Controls) Capture(child);
@@ -126,13 +116,5 @@ public static class L {
     public static void Apply(Control root) {
         if (root.Tag is string) root.Text=T((string)root.Tag);
         foreach (Control child in root.Controls) Apply(child);
-    }
-    public static void SelfTest() {
-        if (Resolve("auto",CultureInfo.GetCultureInfo("es-ES")) != "es" || Resolve("auto",CultureInfo.GetCultureInfo("fr-FR")) != "en" || Resolve("es",CultureInfo.GetCultureInfo("en-US")) != "es") throw new Exception("Language detection failed");
-        for (int i=0;i<Entries.GetLength(0);i++) if (String.IsNullOrEmpty(Entries[i,0]) || String.IsNullOrEmpty(Entries[i,1])) throw new Exception("Missing translation");
-        SetLanguage("en"); if (T("Configurar") != "Settings" || T("SIN REFERENCIA") != "NO REFERENCE") throw new Exception("English translation failed");
-        if (Dynamic("Router ZTE: 12:00:00") != "ZTE router: 12:00:00") throw new Exception("Dynamic English status failed");
-        SetLanguage("es"); if (T("Settings") != "Configurar") throw new Exception("Spanish translation failed");
-        if (Dynamic("Public IP reading: 12:00:00") != "Lectura por IP publica: 12:00:00") throw new Exception("Dynamic Spanish status failed");
     }
 }

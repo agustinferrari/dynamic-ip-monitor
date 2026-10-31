@@ -1,19 +1,18 @@
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $testDir = Join-Path $repoRoot 'test-data'
-$app = Join-Path $repoRoot 'bin\DynamicIPMonitor.exe'
-if (!(Test-Path -LiteralPath $app)) { throw 'Run scripts/build.ps1 first.' }
+& (Join-Path $PSScriptRoot 'build.ps1') -Tests
+$app = Join-Path $repoRoot 'bin\RegressionTests.exe'
 $previousDataDir = $env:MONITORIP_DATA_DIR
 try {
     $env:MONITORIP_DATA_DIR = $testDir
     New-Item -ItemType Directory -Path $testDir -Force | Out-Null
-    $resultFile = Join-Path $testDir 'self-test-result.txt'
-    if (Test-Path -LiteralPath $resultFile) { Remove-Item -LiteralPath $resultFile }
-    $process = Start-Process -FilePath $app -ArgumentList '--self-test' -WindowStyle Hidden -PassThru
+    $resultFile = Join-Path $testDir 'test-output.txt'
+    $errorFile = Join-Path $testDir 'test-error.txt'
+    $process = Start-Process -FilePath $app -WindowStyle Hidden -PassThru -RedirectStandardOutput $resultFile -RedirectStandardError $errorFile
     if (!$process.WaitForExit(30000)) { Stop-Process -Id $process.Id; throw 'Tests timed out.' }
-    if ($process.ExitCode -ne 0) { throw "Tests failed: $($process.ExitCode)" }
-    if (!(Test-Path -LiteralPath $resultFile)) { throw 'Test result not produced.' }
     Get-Content -LiteralPath $resultFile
+    if ($process.ExitCode -ne 0) { Get-Content -LiteralPath $errorFile; throw "Tests failed: $($process.ExitCode)" }
 } finally {
     $env:MONITORIP_DATA_DIR = $previousDataDir
 }

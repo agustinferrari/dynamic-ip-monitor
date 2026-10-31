@@ -5,7 +5,6 @@ using System.Net;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Security.Cryptography;
-using System.Web.Script.Serialization;
 
 public static class AppFiles {
     public static readonly string DataDir = GetDataDir();
@@ -25,13 +24,14 @@ public class AppSettings {
     public string Language = "auto";
     public static readonly string FilePath = Path.Combine(AppFiles.DataDir, "config.json");
     public static AppSettings Load() {
-        if (!File.Exists(FilePath)) return new AppSettings();
-        var settings = new JavaScriptSerializer().Deserialize<AppSettings>(File.ReadAllText(FilePath));
-        if (settings == null) throw new IOException(L.T("Configuracion invalida"));
-        settings.RouterUrl = ValidateUrl(settings.RouterUrl);
-        return settings;
+        if (!JsonStore.Exists(FilePath)) return new AppSettings();
+        return JsonStore.Read<AppSettings>(FilePath, delegate(AppSettings settings) {
+            if (settings == null) return false;
+            settings.RouterUrl = ValidateUrl(settings.RouterUrl);
+            return true;
+        });
     }
-    public void Save() { File.WriteAllText(FilePath, new JavaScriptSerializer().Serialize(this)); }
+    public void Save() { JsonStore.Write(FilePath, this); }
     public string Password() {
         if (String.IsNullOrEmpty(ProtectedPassword)) return "";
         return Encoding.UTF8.GetString(ProtectedData.Unprotect(Convert.FromBase64String(ProtectedPassword), null, DataProtectionScope.CurrentUser));
@@ -41,7 +41,7 @@ public class AppSettings {
     }
     public static string ValidateUrl(string value) {
         Uri uri; IPAddress address;
-        if (!Uri.TryCreate(value.Trim(), UriKind.Absolute, out uri) || (uri.Scheme != "http" && uri.Scheme != "https") || !String.IsNullOrEmpty(uri.UserInfo) || uri.AbsolutePath != "/" || !String.IsNullOrEmpty(uri.Query) || !String.IsNullOrEmpty(uri.Fragment) || !IPAddress.TryParse(uri.Host, out address) || address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) throw new ArgumentException(L.T("Usa una URL local como http://192.168.1.1/"));
+        if (!Uri.TryCreate((value ?? "").Trim(), UriKind.Absolute, out uri) || (uri.Scheme != "http" && uri.Scheme != "https") || !String.IsNullOrEmpty(uri.UserInfo) || uri.AbsolutePath != "/" || !String.IsNullOrEmpty(uri.Query) || !String.IsNullOrEmpty(uri.Fragment) || !IPAddress.TryParse(uri.Host, out address) || address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) throw new ArgumentException(L.T("Usa una URL local como http://192.168.1.1/"));
         byte[] b = address.GetAddressBytes();
         if (!(b[0] == 10 || b[0] == 127 || (b[0] == 192 && b[1] == 168) || (b[0] == 172 && b[1] >= 16 && b[1] <= 31))) throw new ArgumentException(L.T("La direccion del router debe ser una IPv4 privada de tu red local."));
         return uri.AbsoluteUri;

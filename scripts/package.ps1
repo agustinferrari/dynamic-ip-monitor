@@ -1,11 +1,12 @@
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = '0.3.0-beta'
-if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -ne "v$version") { throw "Tag must match v$version" }
 $distDir = Join-Path $repoRoot 'dist'
 New-Item -ItemType Directory -Path $distDir -Force | Out-Null
 $app = Join-Path $repoRoot 'bin\DynamicIPMonitor.exe'
 if (!(Test-Path -LiteralPath $app)) { throw 'Run build.ps1 and test.ps1 first.' }
+$version = [Diagnostics.FileVersionInfo]::GetVersionInfo($app).ProductVersion
+if ($version -notmatch '^\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?$') { throw 'Invalid executable version.' }
+if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -ne "v$version") { throw "Tag must match v$version" }
 $zip = Join-Path $distDir "DynamicIPMonitor-$version-windows.zip"
 # Explicit allowlist. Never package runtime state, settings, captures or histories.
 Compress-Archive -LiteralPath $app,(Join-Path $repoRoot 'README.md'),(Join-Path $repoRoot 'README.en.md'),(Join-Path $repoRoot 'LICENSE'),(Join-Path $repoRoot 'CHANGELOG.md') -DestinationPath $zip -Force

@@ -64,38 +64,4 @@ public static class TrayCountdown {
         }
     }
 
-    public static void SelfTest(string directory) {
-        Check(Describe(TimeSpan.FromHours(3)).Band == "green","3h green");
-        Check(Describe(TimeSpan.FromSeconds(10799)).Band == "yellow","below 3h yellow");
-        Check(Describe(TimeSpan.FromHours(1)).Band == "yellow","1h yellow");
-        Check(Describe(TimeSpan.FromSeconds(3599)).Band == "red","below 1h red");
-        var ordinary = Describe(new TimeSpan(11,37,25));
-        Check(ordinary.Top == "11" && ordinary.Bottom == "","hours only");
-        Check(ordinary.Key == Describe(new TimeSpan(11,12,0)).Key,"unchanged hour reuses icon");
-        Check(Describe(TimeSpan.FromHours(1)).Top == "1","one hour without leading zero");
-        Check(Describe(TimeSpan.FromSeconds(3599)).Top == "59" && Describe(TimeSpan.FromSeconds(3599)).Bottom == "m","minutes when red");
-        Check(Describe(TimeSpan.FromMinutes(1)).Top == "1" && Describe(TimeSpan.FromMinutes(1)).Bottom == "m","one minute boundary");
-        Check(Describe(TimeSpan.FromHours(168)).Top == "168","long cycles remain hours");
-        Check(Describe(TimeSpan.FromSeconds(45)).Bottom == "s","seconds in last minute");
-        Check(Describe(TimeSpan.Zero).Top == "!","expired");
-        Check(Describe(null).Top == "?","unknown");
-        var samples = new TrayCountdownState[] { ordinary, Describe(new TimeSpan(1,30,0)), Describe(new TimeSpan(0,59,0)), Describe(TimeSpan.FromSeconds(45)), Describe(TimeSpan.Zero), Describe(null) };
-        string[] labels = { "11 h 37 m", "1 h 30 m", "59 min", "45 seg", "Vencido", "Sin datos" };
-        using (var sheet = new Bitmap(660,155))
-        using (var graphics = Graphics.FromImage(sheet))
-        using (var font = new Font("Segoe UI",9)) {
-            graphics.Clear(Color.FromArgb(20,26,38));
-            for (int i=0;i<samples.Length;i++) {
-                using (var icon = Create(samples[i]))
-                using (var bitmap = icon.ToBitmap()) {
-                    graphics.DrawImage(bitmap,new Rectangle(i*110+35,12,32,32));
-                    graphics.DrawImage(bitmap,new Rectangle(i*110+43,58,16,16));
-                    graphics.DrawString(labels[i],font,Brushes.White,i*110+15,91);
-                }
-            }
-            graphics.DrawString("32 px arriba / 16 px abajo (tamano habitual de la bandeja)",font,Brushes.LightGray,12,128);
-            sheet.Save(System.IO.Path.Combine(directory,"tray-preview.png"));
-        }
-    }
-    static void Check(bool condition,string message) { if (!condition) throw new Exception("Tray icon: " + message); }
 }

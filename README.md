@@ -5,7 +5,7 @@
 Contador para Windows que avisa antes de una posible reconexión de Internet.
 Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
-**Versión 0.3.0-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
+**Versión 0.3.1-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
 Otros modelos o versiones del firmware pueden requerir otro adaptador. El modo
 de IP pública permite usar el monitor con otros routers, con menor precisión.
 Proyecto independiente, sin afiliación con Antel ni ZTE.
@@ -17,7 +17,7 @@ se guarda localmente. Incluye interfaz, menús de bandeja, avisos y fechas.
 
 ## Descargar y usar
 
-1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.3.0-beta-windows.zip`.
+1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.3.1-beta-windows.zip`.
 2. Extraé el ZIP en una carpeta y ejecutá `DynamicIPMonitor.exe`.
 3. En la primera apertura elegí si autorizás la lectura de tu router o preferís solo IP pública.
 4. Si usás un F6600 compatible, revisá su dirección. El valor sugerido es `http://192.168.1.1/`.
@@ -75,7 +75,7 @@ Los datos de cada persona se guardan en `%LOCALAPPDATA%\DynamicIPMonitor`:
 
 | Archivo | Contenido |
 | --- | --- |
-| `config.json` | Dirección y preferencias, usuario y contraseña opcional protegida con Windows DPAPI para el usuario actual |
+| `config.json` y `.bak` | Dirección y preferencias, usuario y contraseña opcional protegida con Windows DPAPI para el usuario actual |
 | `estado.json` | IP, referencia del contador y última lectura |
 | `estado.json.bak` | Respaldo del estado anterior |
 | `historial.csv` | Cambios observados entre lecturas |
@@ -106,11 +106,12 @@ En PowerShell, desde la raíz del repositorio:
 Usa el compilador de .NET Framework de Windows, sin dependencias NuGet ni descargas
 durante la compilación. El resultado es `bin\DynamicIPMonitor.exe` y el ZIP se genera en
 `dist\`. Las pruebas usan datos aislados en `test-data\` y no acceden al router ni
-consultan servicios externos. El empaquetado usa una lista explícita de archivos
-para que los datos locales no terminen en una distribución.
+consultan servicios externos. Se compilan en `bin\RegressionTests.exe`, separado
+del programa distribuido. El empaquetado usa una lista explícita de archivos para
+que los datos locales y las herramientas de prueba no terminen en una distribución.
 
 GitHub Actions compila, prueba y adjunta el paquete a cada ejecución. Al subir una
-etiqueta `v0.3.0-beta`, publica una **beta en Releases** con el ZIP y su SHA-256,
+etiqueta que coincida con la versión del ejecutable, publica una **beta en Releases** con el ZIP y su SHA-256,
 únicamente después de que la compilación y las pruebas terminen correctamente.
 
 ## Contribuir

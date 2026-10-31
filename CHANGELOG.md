@@ -1,5 +1,17 @@
 # Historial de cambios
 
+## 0.3.1-beta
+
+- Se separaron las pruebas del ejecutable y se quitaron los modos internos de captura y diagnóstico.
+- Un corte de Internet ya no provoca nuevos ingresos innecesarios al panel del router.
+- Los cambios rápidos de IP actualizan correctamente el inicio de sesión.
+- Cambiar de idioma ya no repite avisos cuando el ciclo usa horas decimales.
+- Estado y configuración se guardan de forma atómica y recuperan su respaldo si el archivo principal está dañado.
+- Se validan referencias y valores de ciclo dañados antes de construir la ventana.
+- La ventana permite cerrar Windows y mantiene la casilla de inicio automático consistente si falla el registro.
+- Se unificó la validación de IPv4 y se retiraron campos y traducciones sin uso.
+- La versión del paquete se obtiene del ejecutable para evitar desajustes.
+
 ## 0.3.0-beta
 
 - Interfaz, menús de bandeja, notificaciones y fechas en español e inglés.

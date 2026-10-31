@@ -23,10 +23,16 @@ public class RouterReader {
     CookieContainer cookies = new CookieContainer();
     DateTime nextLoginUtc;
     bool loggedIn;
-    public int LoginCount;
-    public RouterReader(AppSettings configuration) { settings = configuration; baseUrl = AppSettings.ValidateUrl(configuration.RouterUrl); }
+    readonly Func<string,string,string> transport;
+    public RouterReader(AppSettings configuration) : this(configuration, null) { }
+    internal RouterReader(AppSettings configuration, Func<string,string,string> transport) {
+        settings = configuration;
+        baseUrl = AppSettings.ValidateUrl(configuration.RouterUrl);
+        this.transport = transport;
+    }
 
     string Request(string path, string postBody) {
+        if (transport != null) return transport(path, postBody);
         var req = (HttpWebRequest)WebRequest.Create(baseUrl + path);
         req.Proxy = null; req.CookieContainer = cookies;
         req.Timeout = 4000; req.ReadWriteTimeout = 4000;
@@ -54,8 +60,7 @@ public class RouterReader {
         if (String.IsNullOrEmpty(password)) password = Prefilled(html, "Frm_Password");
         var serializer = new JavaScriptSerializer();
         var entry = serializer.Deserialize<Dictionary<string, object>>(Request("?_type=loginData&_tag=login_entry", null));
-        var challenge = new XmlDocument { XmlResolver = null };
-        challenge.LoadXml(Request("?_type=loginData&_tag=login_token", null));
+        var challenge = ParseXml(Request("?_type=loginData&_tag=login_token", null));
         string digest;
         using (var sha = SHA256.Create()) digest = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(password + challenge.DocumentElement.InnerText))).Replace("-", "").ToLowerInvariant();
         password = null;
@@ -64,26 +69,34 @@ public class RouterReader {
         object refresh;
         if (!result.TryGetValue("login_need_refresh", out refresh) || !(refresh is bool) || !(bool)refresh) throw new IOException(L.T("El router no acepto el inicio de sesion"));
         Request("?_type=menuView&_tag=ethWanStatus&Menu3Location=0", null);
-        loggedIn = true; LoginCount++; nextLoginUtc = DateTime.MinValue;
+        loggedIn = true; nextLoginUtc = DateTime.MinValue;
     }
     public ConnectionReading Read() {
         if (!settings.RouterEnabled) throw new IOException(L.T("Lectura de router desactivada"));
-        if (loggedIn) {
-            try { return ParseWan(Request(WanPath, null), DateTime.UtcNow); }
-            catch { loggedIn = false; }
+        for (int attempt = 0; attempt < 2; attempt++) {
+            if (!loggedIn) Login();
+            string response;
+            try { response = Request(WanPath, null); }
+            catch (WebException ex) {
+                var http = ex.Response as HttpWebResponse;
+                if (http == null || (http.StatusCode != HttpStatusCode.Unauthorized && http.StatusCode != HttpStatusCode.Forbidden)) throw;
+                ex.Response.Close(); loggedIn = false; continue;
+            }
+            if (response.IndexOf("SessionTimeout", StringComparison.OrdinalIgnoreCase) >= 0 || response.IndexOf("Frm_Username", StringComparison.Ordinal) >= 0) {
+                loggedIn = false; continue;
+            }
+            // Missing PPPoE data is not an expired router login. Keep the session.
+            return ParseWan(response, DateTime.UtcNow);
         }
-        Login();
-        return ParseWan(Request(WanPath, null), DateTime.UtcNow);
+        throw new IOException(L.T("El router no acepto el inicio de sesion"));
     }
-    public static bool PublicV4(string value) {
-        IPAddress ip;
-        if (!IPAddress.TryParse(value, out ip) || ip.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) return false;
-        byte[] b = ip.GetAddressBytes();
-        return !(b[0] == 0 || b[0] == 10 || b[0] == 127 || b[0] >= 224 || (b[0] == 192 && b[1] == 168) || (b[0] == 172 && b[1] >= 16 && b[1] <= 31) || (b[0] == 169 && b[1] == 254) || (b[0] == 100 && b[1] >= 64 && b[1] <= 127));
+    static XmlDocument ParseXml(string xml) {
+        var document = new XmlDocument { XmlResolver = null };
+        using (var reader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null })) document.Load(reader);
+        return document;
     }
     public static ConnectionReading ParseWan(string xml, DateTime now) {
-        var document = new XmlDocument { XmlResolver = null };
-        document.LoadXml(xml);
+        var document = ParseXml(xml);
         foreach (XmlNode instance in document.SelectNodes("//Instance")) {
             var fields = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
             foreach (XmlNode node in instance.ChildNodes) {
@@ -93,7 +106,7 @@ public class RouterReader {
                 if (value != null && value.Name == "ParaValue") fields[node.InnerText] = value.InnerText;
             }
             string type, status, ip, uptime;
-            if (!fields.TryGetValue("wantype", out type) || type != "pppoe" || !fields.TryGetValue("ConnStatus", out status) || status != "Connected" || !fields.TryGetValue("IPAddress", out ip) || !PublicV4(ip) || !fields.TryGetValue("UpTime", out uptime)) continue;
+            if (!fields.TryGetValue("wantype", out type) || type != "pppoe" || !fields.TryGetValue("ConnStatus", out status) || status != "Connected" || !fields.TryGetValue("IPAddress", out ip) || !NetworkAddress.IsPublicV4(ip) || !fields.TryGetValue("UpTime", out uptime)) continue;
             long seconds;
             if (!Int64.TryParse(uptime, out seconds) || seconds < 0 || seconds > 315360000) continue;
             return new ConnectionReading { Ip = ip, ReadUtc = now, SessionStartUtc = now.AddSeconds(-seconds), FromRouter = true };

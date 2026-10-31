@@ -5,14 +5,14 @@
 A Windows countdown that warns you before a possible Internet reconnection.
 Useful before starting a race or an online match.
 
-**Version 0.3.0-beta.** Direct session reading has been tested with an **Antel ZTE
+**Version 0.3.1-beta.** Direct session reading has been tested with an **Antel ZTE
 F6600**. Other models or firmware may need a different adapter. Public IP monitoring
 works with other routers, with less accurate timing. This is an independent
 project, not affiliated with Antel or ZTE.
 
 ## Download and start
 
-1. Open this repository's **Releases** and download `DynamicIPMonitor-0.3.0-beta-windows.zip`.
+1. Open this repository's **Releases** and download `DynamicIPMonitor-0.3.1-beta-windows.zip`.
 2. Extract the ZIP and run `DynamicIPMonitor.exe`.
 3. Choose **Settings → Language**: Español, English, or Automatic (Windows).
 4. Allow router reading if you have a compatible F6600. Check its local URL;
@@ -68,7 +68,7 @@ Windows may silence alerts while gaming or in Do not disturb.
 ## Privacy and local data
 
 Data lives in `%LOCALAPPDATA%\DynamicIPMonitor`; **Open my data** opens this folder.
-It contains `config.json`, `estado.json`, a state backup, `historial.csv`, and
+It contains `config.json`, `estado.json`, their backups, `historial.csv`, and
 `sesiones-router.csv`. These filenames remain stable across languages.
 
 An optional saved password is protected with Windows DPAPI for the current user;
@@ -93,8 +93,9 @@ From the repository root in PowerShell:
 
 Uses the Windows .NET Framework compiler with no NuGet downloads. The executable
 is written to `bin/` and the release ZIP to `dist/`. Tests use isolated `test-data/`
-and do not access routers or external IP services. Packaging uses an explicit
-allowlist to exclude runtime data.
+and do not access routers or external IP services. Tests compile to a separate
+`bin/RegressionTests.exe`; test and diagnostic code is not shipped in the app.
+Packaging uses an explicit allowlist to exclude runtime data and test tools.
 
 GitHub Actions builds, tests, and packages the app. A matching version tag creates
 a public prerelease with the ZIP and SHA-256 checksum after the build and tests pass.

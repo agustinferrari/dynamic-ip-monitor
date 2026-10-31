@@ -7,11 +7,9 @@ test-data/
 *.exe
 *.pdb
 *.zip
-config.json
+config.json*
 estado.json*
 historial.csv
 sesiones-router.csv
-preview.png
-*-test-result.txt
 *.cookies
 *.log
