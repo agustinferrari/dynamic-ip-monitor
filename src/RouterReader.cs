@@ -26,11 +26,13 @@ public class RouterReader {
     string loginPage;
     internal Action<string,string,string> RequestObserver { get; set; }
     readonly Func<string,string,string> transport;
+    readonly Func<DateTime> utcNow;
     public RouterReader(AppSettings configuration) : this(configuration, null) { }
-    internal RouterReader(AppSettings configuration, Func<string,string,string> transport) {
+    internal RouterReader(AppSettings configuration, Func<string,string,string> transport, Func<DateTime> utcNow = null) {
         settings = configuration;
         baseUrl = AppSettings.ValidateUrl(configuration.RouterUrl);
         this.transport = transport;
+        this.utcNow = utcNow ?? (() => DateTime.UtcNow);
     }
 
     string Request(string path, string postBody, string check = null) {
@@ -55,8 +57,9 @@ public class RouterReader {
         return WebUtility.HtmlDecode(match.Groups[1].Value);
     }
     void Login() {
-        if (DateTime.UtcNow < nextLoginUtc) throw new IOException(L.T("Login del router en espera"));
-        nextLoginUtc = DateTime.UtcNow.AddMinutes(10);
+        if (utcNow() < nextLoginUtc) throw new IOException(L.T("Login del router en espera"));
+        // A router still booting is not a credential rejection. Retry next poll.
+        nextLoginUtc = utcNow().AddSeconds(30);
         cookies = new CookieContainer();
         string html = Request("", null);
         loginPage = html;
@@ -72,7 +75,10 @@ public class RouterReader {
         string body = "action=login&Username=" + Uri.EscapeDataString(user) + "&Password=" + digest + "&_sessionTOKEN=" + Uri.EscapeDataString((string)entry["sess_token"]);
         var result = serializer.Deserialize<Dictionary<string, object>>(Request("?_type=loginData&_tag=login_entry", body));
         object refresh;
-        if (!result.TryGetValue("login_need_refresh", out refresh) || !(refresh is bool) || !(bool)refresh) throw new IOException(L.T("El router no acepto el inicio de sesion"));
+        if (!result.TryGetValue("login_need_refresh", out refresh) || !(refresh is bool) || !(bool)refresh) {
+            nextLoginUtc = utcNow().AddMinutes(10);
+            throw new IOException(L.T("El router no acepto el inicio de sesion"));
+        }
         Request("?_type=menuView&_tag=ethWanStatus&Menu3Location=0", null);
         loggedIn = true; nextLoginUtc = DateTime.MinValue;
     }
@@ -91,7 +97,7 @@ public class RouterReader {
                 loggedIn = false; continue;
             }
             // Missing PPPoE data is not an expired router login. Keep the session.
-            return ParseWan(response, DateTime.UtcNow);
+            return ParseWan(response, utcNow());
         }
         throw new IOException(L.T("El router no acepto el inicio de sesion"));
     }
@@ -118,7 +124,7 @@ public class RouterReader {
             response = Request(RestartRequest.Path, command.Body, command.Check);
         } catch (WebException) { return false; }
           catch (IOException) { return false; }
-        finally { loggedIn = false; nextLoginUtc = DateTime.UtcNow.AddSeconds(60); }
+        finally { loggedIn = false; nextLoginUtc = utcNow().AddSeconds(60); }
         XmlDocument document;
         try { document = ParseXml(response); }
         catch (XmlException) { return false; }

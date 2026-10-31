@@ -19,6 +19,7 @@ public static class L {
         Thread.CurrentThread.CurrentUICulture = Culture;
     }
     internal static readonly string[,] Entries = {
+        {"Internet disponible. Esperando datos del router; se reintenta cada 30 segundos.","Internet available. Waiting for router data; retrying every 30 seconds."},
         {"Reiniciar router","Restart router"},
         {"Se cortara Internet para todos los dispositivos durante varios minutos.\nEl contador se ajustara al leer la nueva sesion.\n\nReiniciar este router?","Internet will disconnect for all devices for several minutes.\nThe countdown will adjust when the new session is read.\n\nRestart this router?"},
         {"No se pudo reiniciar el router. Revisa la conexion y la configuracion.","Could not restart the router. Check the connection and settings."},

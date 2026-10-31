@@ -1,5 +1,12 @@
 # Historial de cambios
 
+## 0.4.1-beta
+
+- Si el router sigue arrancando, se reintenta la conexión cada 30 segundos en lugar de bloquear el ingreso por 10 minutos.
+- La espera de 10 minutos queda reservada para un rechazo de autenticación.
+- Durante la recuperación se actualiza la IP visible y se permite corregir la configuración.
+- Prueba de reinicio simulado con varios intentos durante el arranque y recuperación del contador e ícono.
+
 ## 0.4.0-beta
 
 - Botón para reiniciar un ZTE F6600 compatible, con confirmación en cada uso.

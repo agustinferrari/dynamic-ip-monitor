@@ -143,10 +143,10 @@ public class MonitorWindow : Form {
     }
     void ShowWindow() { Show(); WindowState = FormWindowState.Normal; Activate(); }
     void Configure() {
-        if (worker.IsBusy || restartWorker.IsBusy || awaitingRouter) { MessageBox.Show(L.T("Hay una lectura en curso. Volve a intentar en unos segundos.")); return; }
+        if (worker.IsBusy || restartWorker.IsBusy) { MessageBox.Show(L.T("Hay una lectura en curso. Volve a intentar en unos segundos.")); return; }
         pollTimer.Stop();
         using (var dialog = new SettingsWindow(settings)) {
-            if (dialog.ShowDialog(this) == DialogResult.OK) { settings = dialog.Result; router = new RouterReader(settings); }
+            if (dialog.ShowDialog(this) == DialogResult.OK) { settings = dialog.Result; router = new RouterReader(settings); awaitingRouter = false; restartResumeUtc = DateTime.MinValue; }
         }
         L.SetLanguage(settings.Language); ApplyLocalization();
         pollTimer.Start(); Poll();
@@ -217,6 +217,7 @@ public class MonitorWindow : Form {
         bool previouslyFromRouter = state.RouterVerified;
         string change = reading.FromRouter ? MonitorLogic.ObserveRouter(state, reading) : MonitorLogic.Observe(state, reading.Ip, now);
         SetStatus(reading.FromRouter ? "Router ZTE: " : settings.RouterEnabled ? "Router sin lectura; respaldo por IP publica: " : "Lectura por IP publica: ", now.ToLocalTime().ToString("HH:mm:ss"));
+        if (awaitingRouter) SetStatus("Internet disponible. Esperando datos del router; se reintenta cada 30 segundos.");
         if (!reading.FromRouter && state.RouterVerified) state.Quality = "Ultimo inicio leido del router; sin confirmacion actual";
         if (change == "change" || change == "gap" || change == "session") {
             try {
@@ -240,6 +241,7 @@ public class MonitorWindow : Form {
         if (awaitingRouter || restartWorker.IsBusy) {
             UpdateTrayIcon(null); clockLabel.Font = expiredFont; clockLabel.Text = L.T("RECONECTANDO...");
             estimateLabel.Text = L.T("Esperando una nueva lectura del router.");
+            infoLabel.Text = L.T("IP publica: ") + (String.IsNullOrEmpty(state.Ip) ? L.T("pendiente") : state.Ip);
             statusLabel.Text = StatusText; tray.Text = L.T("Dynamic IP Monitor - reconectando"); return;
         }
         if (state.AnchorUtc == DateTime.MinValue) {

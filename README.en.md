@@ -5,14 +5,14 @@
 A Windows countdown that warns you before a possible Internet reconnection.
 Useful before starting a race or an online match.
 
-**Version 0.4.0-beta.** Direct session reading has been tested with an **Antel ZTE
+**Version 0.4.1-beta.** Direct session reading has been tested with an **Antel ZTE
 F6600**. Other models or firmware may need a different adapter. Public IP monitoring
 works with other routers, with less accurate timing. This is an independent
 project, not affiliated with Antel or ZTE.
 
 ## Download and start
 
-1. Open this repository's **Releases** and download `DynamicIPMonitor-0.4.0-beta-windows.zip`.
+1. Open this repository's **Releases** and download `DynamicIPMonitor-0.4.1-beta-windows.zip`.
 2. Extract the ZIP and run `DynamicIPMonitor.exe`.
 3. Choose **Settings → Language**: Español, English, or Automatic (Windows).
 4. Allow router reading if you have a compatible F6600. Check its local URL;
