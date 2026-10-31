@@ -1,0 +1,17 @@
+bin/
+dist/
+test-data/
+.vs/
+*.user
+*.suo
+*.exe
+*.pdb
+*.zip
+config.json
+estado.json*
+historial.csv
+sesiones-router.csv
+preview.png
+*-test-result.txt
+*.cookies
+*.log

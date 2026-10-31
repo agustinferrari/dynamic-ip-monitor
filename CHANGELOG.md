@@ -1,0 +1,36 @@
+# Historial de cambios
+
+## 0.3.0-beta
+
+- Interfaz, menús de bandeja, notificaciones y fechas en español e inglés.
+- Selector de idioma con cambio inmediato y preferencia guardada.
+- Detección del idioma de Windows; inglés como alternativa para otros idiomas.
+- Catálogo central de traducciones e instrucciones en inglés.
+- Pruebas de traducciones, detección, persistencia y vistas en ambos idiomas.
+
+## 0.2.2-beta
+
+- Ícono simplificado a un único número grande de horas completas.
+- Con menos de una hora muestra minutos y, durante el último minuto, segundos.
+- Sin ceros a la izquierda; conserva los colores y el tiempo completo al pasar el mouse.
+
+## 0.2.1-beta
+
+- Contador en el ícono de la bandeja: horas arriba y minutos abajo.
+- Segundos durante el último minuto y tiempo completo al pasar el mouse.
+- Verde con 3 h o más, amarillo entre 1 y 3 h y rojo con menos de 1 h.
+- Indicadores separados para referencia desconocida y estimación vencida.
+- El contador de la ventana usa los mismos colores.
+- Actualización de íconos con liberación de recursos nativos.
+
+## 0.2.0-beta
+
+- Primera beta pública para Windows.
+- Dirección del router y credenciales opcionales configurables.
+- Acceso al router habilitado expresamente por cada usuario.
+- Lectura del inicio de sesión PPPoE desde el contador WAN del ZTE F6600.
+- Respaldo mediante cambios de IP pública.
+- Avisos de reconexión, bandeja e inicio opcional con Windows.
+- Datos locales separados de los archivos de la aplicación.
+- Contraseña opcional protegida con Windows DPAPI.
+- Compilación, pruebas aisladas y empaquetado para GitHub Releases.
