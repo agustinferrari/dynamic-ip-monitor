@@ -2,8 +2,8 @@ using System;
 using System.Globalization;
 public class ConnectionState {
     public string Ip = "";
-    public DateTime AnchorUtc;
-    public DateTime LastSuccessUtc;
+    public DateTime AnchorUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+    public DateTime LastSuccessUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
     public string Quality = "Referencia manual aproximada";
     public string AlertKey = "";
     public double PeriodHours = 12;
@@ -13,6 +13,9 @@ public class ConnectionState {
 public static class MonitorLogic {
     public static bool ValidState(ConnectionState state) {
         if (state == null || Double.IsNaN(state.PeriodHours) || Double.IsInfinity(state.PeriodHours) || state.PeriodHours < 1 || state.PeriodHours > 168) return false;
+        // Older versions serialized the empty date using the local UTC offset.
+        if (state.AnchorUtc.Year == 1) state.AnchorUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+        if (state.LastSuccessUtc.Year == 1) state.LastSuccessUtc = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
         if (!String.IsNullOrEmpty(state.Ip) && !NetworkAddress.IsPublicV4(state.Ip)) return false;
         return ValidDate(state.AnchorUtc) && ValidDate(state.LastSuccessUtc);
     }

@@ -1,5 +1,10 @@
 # Historial de cambios
 
+## 0.3.2-beta
+
+- Se normalizan las fechas vacías de versiones anteriores sin depender de la zona horaria.
+- Un campo de fecha inválido también permite recuperar el archivo de respaldo.
+
 ## 0.3.1-beta
 
 - Se separaron las pruebas del ejecutable y se quitaron los modos internos de captura y diagnóstico.

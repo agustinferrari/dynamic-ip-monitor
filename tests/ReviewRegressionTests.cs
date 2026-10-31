@@ -68,6 +68,8 @@ public static partial class RegressionTests {
         JsonStore.Write(path,state); // Produce a valid backup.
         File.WriteAllText(path,"{broken");
         Assert(JsonStore.Read<ConnectionState>(path,MonitorLogic.ValidState).Ip == "1.1.1.1","recover corrupt primary from backup");
+        File.WriteAllText(path,"{\"AnchorUtc\":\"invalid-date\"}");
+        Assert(JsonStore.Read<ConnectionState>(path,MonitorLogic.ValidState).Ip == "1.1.1.1","recover invalid date from backup");
         File.Delete(path);
         Assert(JsonStore.Read<ConnectionState>(path,MonitorLogic.ValidState).Ip == "1.1.1.1","recover missing primary from backup");
         foreach (ConnectionState bad in new ConnectionState[] {
@@ -79,6 +81,10 @@ public static partial class RegressionTests {
             new ConnectionState { Ip="192.168.1.1" }
         }) Assert(!MonitorLogic.ValidState(bad),"reject invalid stored state");
         Assert(MonitorLogic.ValidState(new ConnectionState()),"fresh state without a reference");
+        var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        var shiftedEmpty = DateTime.SpecifyKind(DateTime.MinValue.AddHours(3),DateTimeKind.Utc);
+        var legacy = serializer.Deserialize<ConnectionState>(serializer.Serialize(new ConnectionState { AnchorUtc=shiftedEmpty, LastSuccessUtc=shiftedEmpty }));
+        Assert(MonitorLogic.ValidState(legacy) && legacy.AnchorUtc == DateTime.MinValue && legacy.LastSuccessUtc == DateTime.MinValue,"normalize legacy empty dates with a timezone offset");
         Assert(!NetworkAddress.IsPublicV4("100.64.0.1") && !NetworkAddress.IsPublicV4("::1") && NetworkAddress.IsPublicV4("1.1.1.1"),"shared IPv4 validation");
         bool rejected=false;
         try { AppSettings.ValidateUrl(null); } catch (ArgumentException) { rejected=true; }

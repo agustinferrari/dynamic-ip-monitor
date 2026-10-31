@@ -13,6 +13,7 @@ public static class JsonStore {
                 if (valid(value)) return value;
             } catch (ArgumentException) { }
               catch (InvalidOperationException) { }
+              catch (FormatException) { }
               catch (IOException) { }
         }
         throw new IOException("Invalid saved data: " + Path.GetFileName(path));

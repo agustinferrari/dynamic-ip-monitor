@@ -5,7 +5,7 @@
 Contador para Windows que avisa antes de una posible reconexión de Internet.
 Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
-**Versión 0.3.1-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
+**Versión 0.3.2-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
 Otros modelos o versiones del firmware pueden requerir otro adaptador. El modo
 de IP pública permite usar el monitor con otros routers, con menor precisión.
 Proyecto independiente, sin afiliación con Antel ni ZTE.
@@ -17,7 +17,7 @@ se guarda localmente. Incluye interfaz, menús de bandeja, avisos y fechas.
 
 ## Descargar y usar
 
-1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.3.1-beta-windows.zip`.
+1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.3.2-beta-windows.zip`.
 2. Extraé el ZIP en una carpeta y ejecutá `DynamicIPMonitor.exe`.
 3. En la primera apertura elegí si autorizás la lectura de tu router o preferís solo IP pública.
 4. Si usás un F6600 compatible, revisá su dirección. El valor sugerido es `http://192.168.1.1/`.
