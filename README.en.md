@@ -97,7 +97,7 @@ and do not access routers or external IP services. Packaging uses an explicit
 allowlist to exclude runtime data.
 
 GitHub Actions builds, tests, and packages the app. A matching version tag creates
-a draft prerelease with the ZIP and SHA-256 checksum for review and publication.
+a public prerelease with the ZIP and SHA-256 checksum after the build and tests pass.
 
 Translations live in `src/I18n.cs`. Keep both language entries for every new UI
 message and use `L.T` for displayed text. Raw CSV columns and technical test logs

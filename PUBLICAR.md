@@ -25,8 +25,8 @@ personal ni sus archivos de estado, historiales o capturas.
    git push origin v0.3.0-beta
    ```
 
-5. El flujo creará una release en borrador con el ZIP y un archivo SHA-256.
-   Abrí **Releases**, revisá el borrador y pulsá **Publish release**.
+5. Una vez que la compilación y las pruebas pasen, el flujo publicará la beta con
+   el ZIP y un archivo SHA-256 en **Releases**.
 6. Compartí la dirección de esa release: `/releases/tag/v0.3.0-beta`.
 
 También podés crear la release manualmente desde la web y adjuntar el ZIP

@@ -43,7 +43,7 @@ jobs:
         with:
           name: DynamicIPMonitor-windows
           path: dist
-      - name: Create draft release
+      - name: Publish beta release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -51,5 +51,5 @@ jobs:
           RELEASE_REPO: ${{ github.repository }}
         run: |
           $assets = Get-ChildItem -LiteralPath dist -File | ForEach-Object { $_.FullName }
-          gh release create $env:RELEASE_TAG @assets --repo $env:RELEASE_REPO --verify-tag --draft --prerelease --title "Dynamic IP Monitor $env:RELEASE_TAG" --generate-notes
+          gh release create $env:RELEASE_TAG @assets --repo $env:RELEASE_REPO --verify-tag --prerelease --title "Dynamic IP Monitor $env:RELEASE_TAG" --generate-notes
           if ($LASTEXITCODE -ne 0) { throw 'Release creation failed.' }

@@ -110,8 +110,8 @@ consultan servicios externos. El empaquetado usa una lista explícita de archivo
 para que los datos locales no terminen en una distribución.
 
 GitHub Actions compila, prueba y adjunta el paquete a cada ejecución. Al subir una
-etiqueta `v0.3.0-beta`, crea una **release en borrador** con el ZIP y su SHA-256.
-Revisala y publicala para habilitar la descarga pública.
+etiqueta `v0.3.0-beta`, publica una **beta en Releases** con el ZIP y su SHA-256,
+únicamente después de que la compilación y las pruebas terminen correctamente.
 
 ## Contribuir
 
