@@ -14,7 +14,7 @@ public static partial class RegressionTests {
         try {
             Dir=AppFiles.DataDir;
             L.SetLanguage("es");
-            SelfTest(); TestStorage(); TestRouterSessions(); TestFastIpChange();
+            SelfTest(); TestStorage(); TestRouterSessions(); TestFastIpChange(); TestRestart();
             Console.WriteLine("PASS: " + assertions + " checks (connection timing, router sessions, storage, languages and tray icons).");
             return 0;
         } catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }

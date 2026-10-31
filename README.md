@@ -5,7 +5,7 @@
 Contador para Windows que avisa antes de una posible reconexión de Internet.
 Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
-**Versión 0.3.2-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
+**Versión 0.4.0-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
 Otros modelos o versiones del firmware pueden requerir otro adaptador. El modo
 de IP pública permite usar el monitor con otros routers, con menor precisión.
 Proyecto independiente, sin afiliación con Antel ni ZTE.
@@ -17,7 +17,7 @@ se guarda localmente. Incluye interfaz, menús de bandeja, avisos y fechas.
 
 ## Descargar y usar
 
-1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.3.2-beta-windows.zip`.
+1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.4.0-beta-windows.zip`.
 2. Extraé el ZIP en una carpeta y ejecutá `DynamicIPMonitor.exe`.
 3. En la primera apertura elegí si autorizás la lectura de tu router o preferís solo IP pública.
 4. Si usás un F6600 compatible, revisá su dirección. El valor sugerido es `http://192.168.1.1/`.
@@ -43,6 +43,12 @@ Cerrar con la X mantiene el monitor en la bandeja junto al reloj. Para detenerlo
 clic derecho en el ícono → **Salir y detener monitoreo**.
 La casilla **Iniciar con Windows** configura el inicio para tu usuario.
 Si movés el ejecutable, desmarcá y volvé a marcar esa casilla.
+
+El botón **Reiniciar router** está disponible con la lectura del ZTE habilitada.
+Pide confirmación cada vez. Luego espera una nueva lectura del router para ajustar
+el contador; no toma la hora del clic como inicio de la sesión. Si se pierde la
+respuesta, muestra el resultado como no confirmado y no repite el reinicio.
+La preparación se verificó con el F6600; el reinicio real no se ejecutó como prueba.
 
 ## Qué mide
 
@@ -85,7 +91,9 @@ El botón **Abrir mis datos** abre esa carpeta. No compartas esos archivos como
 parte del proyecto ni los adjuntes a un reporte sin revisarlos: contienen datos
 de tu red. La contraseña protegida no es portable a otra cuenta de Windows.
 Las cookies de autenticación se conservan únicamente en memoria. El programa
-solo ingresa y lee el estado: no reinicia ni configura el router. El protocolo
+consulta el estado automáticamente. **Reiniciar router** envía un reinicio solo
+después de tu confirmación; corta Internet para todos los dispositivos durante
+varios minutos. No restablece valores de fábrica. El protocolo
 local depende del equipo; la dirección predeterminada usa HTTP.
 
 Los servicios externos del respaldo son `api.ipify.org`, `checkip.amazonaws.com`

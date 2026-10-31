@@ -1,5 +1,13 @@
 # Historial de cambios
 
+## 0.4.0-beta
+
+- Botón para reiniciar un ZTE F6600 compatible, con confirmación en cada uso.
+- Solicitud con token de sesión e integridad del panel; nunca se repite al perder la respuesta.
+- Estado de reconexión hasta recuperar una lectura del router, sin adelantar el contador.
+- Interfaz y mensajes nuevos en español e inglés.
+- Pruebas simuladas de éxito, rechazo y respuesta perdida; preparación verificada sin reinicio real.
+
 ## 0.3.2-beta
 
 - Se normalizan las fechas vacías de versiones anteriores sin depender de la zona horaria.

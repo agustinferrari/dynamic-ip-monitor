@@ -20,6 +20,10 @@ public class MonitorWindow : Form {
     CheckBox top, startup;
     System.Windows.Forms.Timer uiTimer, pollTimer;
     BackgroundWorker worker;
+    BackgroundWorker restartWorker;
+    Button restartButton;
+    DateTime restartResumeUtc;
+    bool awaitingRouter;
     RouterReader router;
     AppSettings settings;
     string statusKey = "Esperando la primera lectura...", statusDetail = "", statusWarning = "";
@@ -74,6 +78,8 @@ public class MonitorWindow : Form {
         configure.Click += delegate { Configure(); };
         Button dataFolder = ButtonAt(L.T("Abrir mis datos"), 190, 432, 150);
         dataFolder.Click += delegate { System.Diagnostics.Process.Start("explorer.exe", "\"" + Dir + "\""); };
+        restartButton = ButtonAt(L.T("Reiniciar router"), 356, 432, 200);
+        restartButton.Click += delegate { RestartRouter(); };
         Label note = LabelAt(L.T("Icono: horas completas; en rojo, minutos; ultimo minuto, segundos.\nVerde: 3 h o mas. Amarillo: 1 a 3 h. Rojo: menos de 1 h.\nAvisos: 30, 15, 5 y 1 min. El proximo corte es estimado."), 24, 487, 605, 48);
         note.Font = new Font("Segoe UI", 9);
         note.ForeColor = Color.FromArgb(156, 168, 188);
@@ -101,6 +107,21 @@ public class MonitorWindow : Form {
             catch { e.Result = new ConnectionReading { Ip = FetchIp(), ReadUtc = DateTime.UtcNow }; }
         };
         worker.RunWorkerCompleted += Polled;
+        restartWorker = new BackgroundWorker();
+        restartWorker.DoWork += delegate(object sender, DoWorkEventArgs e) { e.Result = router.Restart(); };
+        restartWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
+            if (quitting || IsDisposed) return;
+            if (e.Error != null) {
+                awaitingRouter = false;
+                SetStatus("No se pudo reiniciar el router. Revisa la conexion y la configuracion.");
+                MessageBox.Show(this, StatusText, L.T("Reiniciar router"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else {
+                awaitingRouter = true;
+                restartResumeUtc = DateTime.UtcNow.AddSeconds(60);
+                SetStatus((bool)e.Result ? "Reinicio aceptado. Esperando que vuelva Internet..." : "Respuesta no confirmada. Esperando al router; no se repetira el reinicio.");
+            }
+            pollTimer.Start(); Render();
+        };
         pollTimer = new System.Windows.Forms.Timer { Interval = 30000 };
         pollTimer.Tick += delegate { Poll(); };
         uiTimer = new System.Windows.Forms.Timer { Interval = 1000 };
@@ -122,13 +143,21 @@ public class MonitorWindow : Form {
     }
     void ShowWindow() { Show(); WindowState = FormWindowState.Normal; Activate(); }
     void Configure() {
-        if (worker.IsBusy) { MessageBox.Show(L.T("Hay una lectura en curso. Volve a intentar en unos segundos.")); return; }
+        if (worker.IsBusy || restartWorker.IsBusy || awaitingRouter) { MessageBox.Show(L.T("Hay una lectura en curso. Volve a intentar en unos segundos.")); return; }
         pollTimer.Stop();
         using (var dialog = new SettingsWindow(settings)) {
             if (dialog.ShowDialog(this) == DialogResult.OK) { settings = dialog.Result; router = new RouterReader(settings); }
         }
         L.SetLanguage(settings.Language); ApplyLocalization();
         pollTimer.Start(); Poll();
+    }
+    void RestartRouter() {
+        if (!settings.RouterEnabled || worker.IsBusy || restartWorker.IsBusy || awaitingRouter) return;
+        pollTimer.Stop();
+        string warning = L.T("Se cortara Internet para todos los dispositivos durante varios minutos.\nEl contador se ajustara al leer la nueva sesion.\n\nReiniciar este router?") + "\n" + settings.RouterUrl;
+        if (MessageBox.Show(this, warning, L.T("Reiniciar router"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) { pollTimer.Start(); return; }
+        SetStatus("Enviando solicitud de reinicio...");
+        restartWorker.RunWorkerAsync(); Render();
     }
     void ApplyLocalization() {
         L.Apply(this); manual.CustomFormat=L.DateTimePattern;
@@ -175,11 +204,12 @@ public class MonitorWindow : Form {
         }
         return ip;
     }
-    void Poll() { if (!worker.IsBusy) worker.RunWorkerAsync(); }
+    void Poll() { if (!worker.IsBusy && !restartWorker.IsBusy && DateTime.UtcNow >= restartResumeUtc) worker.RunWorkerAsync(); }
     void Polled(object sender, RunWorkerCompletedEventArgs e) {
         if (quitting || IsDisposed) return;
         if (e.Error != null) { SetStatus("Sin lectura de IP. Se reintentara; el contador sigue siendo estimado."); Render(); return; }
         var reading = (ConnectionReading)e.Result;
+        if (reading.FromRouter) awaitingRouter = false;
         DateTime now = reading.ReadUtc;
         string oldIp = state.Ip;
         DateTime previousSuccess = state.LastSuccessUtc;
@@ -206,6 +236,12 @@ public class MonitorWindow : Form {
         SaveState(); Render();
     }
     void Render() {
+        restartButton.Enabled = settings.RouterEnabled && !worker.IsBusy && !restartWorker.IsBusy && !awaitingRouter;
+        if (awaitingRouter || restartWorker.IsBusy) {
+            UpdateTrayIcon(null); clockLabel.Font = expiredFont; clockLabel.Text = L.T("RECONECTANDO...");
+            estimateLabel.Text = L.T("Esperando una nueva lectura del router.");
+            statusLabel.Text = StatusText; tray.Text = L.T("Dynamic IP Monitor - reconectando"); return;
+        }
         if (state.AnchorUtc == DateTime.MinValue) {
             UpdateTrayIcon(null);
             clockLabel.Text = L.T("SIN REFERENCIA"); clockLabel.Font = expiredFont;
@@ -234,6 +270,7 @@ public class MonitorWindow : Form {
         if (previous != null) previous.Dispose();
     }
     void CheckAlerts() {
+        if (awaitingRouter || restartWorker.IsBusy) return;
         if (state.AnchorUtc == DateTime.MinValue) return;
         int band = MonitorLogic.AlertBand((state.AnchorUtc.AddHours(state.PeriodHours) - DateTime.UtcNow).TotalMinutes);
         if (band < 0) return;

@@ -19,6 +19,17 @@ public static class L {
         Thread.CurrentThread.CurrentUICulture = Culture;
     }
     internal static readonly string[,] Entries = {
+        {"Reiniciar router","Restart router"},
+        {"Se cortara Internet para todos los dispositivos durante varios minutos.\nEl contador se ajustara al leer la nueva sesion.\n\nReiniciar este router?","Internet will disconnect for all devices for several minutes.\nThe countdown will adjust when the new session is read.\n\nRestart this router?"},
+        {"No se pudo reiniciar el router. Revisa la conexion y la configuracion.","Could not restart the router. Check the connection and settings."},
+        {"Reinicio aceptado. Esperando que vuelva Internet...","Restart accepted. Waiting for Internet to return..."},
+        {"Respuesta no confirmada. Esperando al router; no se repetira el reinicio.","Response unconfirmed. Waiting for the router; restart will not be repeated."},
+        {"Enviando solicitud de reinicio...","Sending restart request..."},
+        {"RECONECTANDO...","RECONNECTING..."},
+        {"Esperando una nueva lectura del router.","Waiting for a new router reading."},
+        {"Dynamic IP Monitor - reconectando","Dynamic IP Monitor - reconnecting"},
+        {"El router rechazo el reinicio.","The router rejected the restart."},
+        {"El firmware no permite preparar el reinicio.","This firmware cannot prepare the restart request."},
         {"Automático (Windows)","Automatic (Windows)"},
         {"Idioma","Language"},
         {"Configurar Dynamic IP Monitor","Configure Dynamic IP Monitor"},

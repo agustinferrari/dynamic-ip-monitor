@@ -5,14 +5,14 @@
 A Windows countdown that warns you before a possible Internet reconnection.
 Useful before starting a race or an online match.
 
-**Version 0.3.2-beta.** Direct session reading has been tested with an **Antel ZTE
+**Version 0.4.0-beta.** Direct session reading has been tested with an **Antel ZTE
 F6600**. Other models or firmware may need a different adapter. Public IP monitoring
 works with other routers, with less accurate timing. This is an independent
 project, not affiliated with Antel or ZTE.
 
 ## Download and start
 
-1. Open this repository's **Releases** and download `DynamicIPMonitor-0.3.2-beta-windows.zip`.
+1. Open this repository's **Releases** and download `DynamicIPMonitor-0.4.0-beta-windows.zip`.
 2. Extract the ZIP and run `DynamicIPMonitor.exe`.
 3. Choose **Settings → Language**: Español, English, or Automatic (Windows).
 4. Allow router reading if you have a compatible F6600. Check its local URL;
@@ -73,8 +73,9 @@ It contains `config.json`, `estado.json`, their backups, `historial.csv`, and
 
 An optional saved password is protected with Windows DPAPI for the current user;
 it is not portable to another Windows account. Authentication cookies stay in
-memory. The app only signs in and reads status; it does not reconfigure the router
-or restart the connection. The default local router URL uses HTTP.
+memory. Monitoring reads status automatically. **Restart router** sends a reboot
+only after confirmation; Internet disconnects for all devices for several minutes.
+It does not restore factory settings. The default local router URL uses HTTP.
 
 Fallback services are `api.ipify.org`, `checkip.amazonaws.com`, and
 `ipv4.icanhazip.com`. They receive your public IP, not router credentials or history.
@@ -106,3 +107,10 @@ remain stable across language changes. Operating system error details may use th
 Windows system language.
 
 Licensed under [MIT](LICENSE).
+
+## Restarting the router
+
+Enable ZTE router reading to use **Restart router**. Confirmation is required every
+time. The countdown adjusts from the next router reading, not the button click.
+If the response is lost, the result stays unconfirmed and the restart is not retried.
+Request preparation was checked on the F6600; an actual reboot was not run as a test.

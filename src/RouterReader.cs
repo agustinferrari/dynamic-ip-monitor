@@ -15,7 +15,7 @@ public class ConnectionReading {
     public bool FromRouter;
 }
 
-// Only login and GET status endpoints are used. No connection controls are called.
+// Monitoring is read-only. Restart is a separate, explicitly confirmed operation.
 public class RouterReader {
     readonly AppSettings settings;
     readonly string baseUrl;
@@ -23,6 +23,8 @@ public class RouterReader {
     CookieContainer cookies = new CookieContainer();
     DateTime nextLoginUtc;
     bool loggedIn;
+    string loginPage;
+    internal Action<string,string,string> RequestObserver { get; set; }
     readonly Func<string,string,string> transport;
     public RouterReader(AppSettings configuration) : this(configuration, null) { }
     internal RouterReader(AppSettings configuration, Func<string,string,string> transport) {
@@ -31,12 +33,14 @@ public class RouterReader {
         this.transport = transport;
     }
 
-    string Request(string path, string postBody) {
+    string Request(string path, string postBody, string check = null) {
+        if (RequestObserver != null) RequestObserver(path, postBody, check);
         if (transport != null) return transport(path, postBody);
         var req = (HttpWebRequest)WebRequest.Create(baseUrl + path);
         req.Proxy = null; req.CookieContainer = cookies;
         req.Timeout = 4000; req.ReadWriteTimeout = 4000;
         req.AllowAutoRedirect = false;
+        if (check != null) req.Headers["Check"] = check;
         if (postBody != null) {
             req.Method = "POST"; req.ContentType = "application/x-www-form-urlencoded";
             byte[] bytes = Encoding.UTF8.GetBytes(postBody); req.ContentLength = bytes.Length;
@@ -55,6 +59,7 @@ public class RouterReader {
         nextLoginUtc = DateTime.UtcNow.AddMinutes(10);
         cookies = new CookieContainer();
         string html = Request("", null);
+        loginPage = html;
         string user = String.IsNullOrEmpty(settings.Username) ? Prefilled(html, "Frm_Username") : settings.Username;
         string password = settings.Password();
         if (String.IsNullOrEmpty(password)) password = Prefilled(html, "Frm_Password");
@@ -90,10 +95,37 @@ public class RouterReader {
         }
         throw new IOException(L.T("El router no acepto el inicio de sesion"));
     }
-    static XmlDocument ParseXml(string xml) {
+    internal static XmlDocument ParseXml(string xml) {
         var document = new XmlDocument { XmlResolver = null };
         using (var reader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null })) document.Load(reader);
         return document;
+    }
+    internal RestartRequest PrepareRestart() {
+        if (!settings.RouterEnabled) throw new IOException(L.T("Lectura de router desactivada"));
+        for (int attempt = 0; attempt < 2; attempt++) {
+            if (!loggedIn) Login();
+            string view = Request("?_type=menuView&_tag=rebootAndReset&Menu3Location=0", null);
+            if (view.IndexOf("SessionTimeout", StringComparison.OrdinalIgnoreCase) >= 0 || view.IndexOf("Frm_Username", StringComparison.Ordinal) >= 0) { loggedIn = false; continue; }
+            return RestartRequest.Create(view, loginPage);
+        }
+        throw new IOException(L.T("El router no acepto el inicio de sesion"));
+    }
+    public bool Restart() {
+        RestartRequest command = PrepareRestart();
+        string response;
+        try {
+            // Send exactly once: a lost response can mean the router is already rebooting.
+            response = Request(RestartRequest.Path, command.Body, command.Check);
+        } catch (WebException) { return false; }
+          catch (IOException) { return false; }
+        finally { loggedIn = false; nextLoginUtc = DateTime.UtcNow.AddSeconds(60); }
+        XmlDocument document;
+        try { document = ParseXml(response); }
+        catch (XmlException) { return false; }
+        XmlNode result = document.SelectSingleNode("//IF_ERRORSTR");
+        if (result == null) return false;
+        if (result.InnerText != "SUCC") throw new IOException(L.T("El router rechazo el reinicio."));
+        return true;
     }
     public static ConnectionReading ParseWan(string xml, DateTime now) {
         var document = ParseXml(xml);
