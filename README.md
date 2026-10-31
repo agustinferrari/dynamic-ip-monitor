@@ -5,11 +5,11 @@
 Contador para Windows que avisa antes de una posible reconexión de Internet.
 Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
-![Ventana principal de Dynamic IP Monitor con el contador y las acciones de monitoreo](assets/ui-es.png)
+![Ventana principal de Dynamic IP Monitor con el contador y las acciones de monitoreo](assets/main-window-es.png)
 
 *Vista de la aplicación con datos de ejemplo.*
 
-![Estados del ícono: horas en verde y amarillo, minutos en rojo, estimación vencida y falta de referencia](assets/tray-states-es.png)
+![Estados del ícono: horas en verde y amarillo, minutos en rojo, estimación vencida y falta de referencia](assets/tray-guide-es.png)
 
 *Íconos ampliados para mostrar los colores y las unidades que aparecen junto al reloj de Windows.*
 

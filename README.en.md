@@ -5,11 +5,11 @@
 A Windows countdown that warns you before a possible Internet reconnection.
 Useful before starting a race or an online match.
 
-![Dynamic IP Monitor main window showing the countdown and monitoring actions](assets/ui-en.png)
+![Dynamic IP Monitor main window showing the countdown and monitoring actions](assets/main-window-en.png)
 
 *Application preview with example data.*
 
-![Tray states: hours in green and yellow, minutes in red, expired estimate, and no reference](assets/tray-states-en.png)
+![Tray states: hours in green and yellow, minutes in red, expired estimate, and no reference](assets/tray-guide-en.png)
 
 *Icons enlarged to show the colors and units displayed next to the Windows clock.*
 
