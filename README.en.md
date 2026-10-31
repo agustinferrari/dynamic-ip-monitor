@@ -5,6 +5,14 @@
 A Windows countdown that warns you before a possible Internet reconnection.
 Useful before starting a race or an online match.
 
+![Dynamic IP Monitor main window showing the countdown and monitoring actions](assets/ui-en.png)
+
+*Application preview with example data.*
+
+![Tray states: hours in green and yellow, minutes and seconds in red, expired estimate, and no reference](assets/tray-states-en.png)
+
+*Icons enlarged to show the colors and units displayed next to the Windows clock.*
+
 **Version 0.5.0-beta.** Direct session reading has been tested with an **Antel ZTE
 F6600**. Other models or firmware may need a different adapter. Public IP monitoring
 works with other routers, with less accurate timing. This is an independent

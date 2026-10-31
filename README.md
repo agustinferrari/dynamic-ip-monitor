@@ -5,6 +5,14 @@
 Contador para Windows que avisa antes de una posible reconexión de Internet.
 Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
+![Ventana principal de Dynamic IP Monitor con el contador y las acciones de monitoreo](assets/ui-es.png)
+
+*Vista de la aplicación con datos de ejemplo.*
+
+![Estados del ícono: horas en verde y amarillo, minutos y segundos en rojo, estimación vencida y falta de referencia](assets/tray-states-es.png)
+
+*Íconos ampliados para mostrar los colores y las unidades que aparecen junto al reloj de Windows.*
+
 **Versión 0.5.0-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
 Otros modelos o versiones del firmware pueden requerir otro adaptador. El modo
 de IP pública permite usar el monitor con otros routers, con menor precisión.
