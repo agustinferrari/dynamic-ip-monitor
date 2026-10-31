@@ -19,6 +19,17 @@ public static class L {
         Thread.CurrentThread.CurrentUICulture = Culture;
     }
     internal static readonly string[,] Entries = {
+        {"Habilita la lectura del router en Configurar\npara poder reiniciarlo desde aqui.","Enable router reading in Settings\nto restart it from here."},
+        {"Próximo cambio estimado","Estimated next reconnect"},
+        {"Seguir en bandeja","Keep in system tray"},
+        {"Actualizar ahora","Refresh now"},
+        {"Actualizando lectura...","Refreshing connection..."},
+        {"Avisos a los 30, 15, 5 y 1 min.\nWindows puede silenciarlos al jugar.","Alerts at 30, 15, 5 and 1 min.\nWindows may silence them while gaming."},
+        {"Control del router","Router control"},
+        {"Reiniciar corta Internet en todos los dispositivos.\nTe pediremos confirmación antes de continuar.","Restart disconnects all devices from Internet.\nWe will ask for confirmation before continuing."},
+        {"Mostrar ajustes avanzados","Show advanced settings"},
+        {"Ocultar ajustes avanzados","Hide advanced settings"},
+        {"Bandeja: horas completas; en rojo, minutos; último minuto, segundos.\nVerde: 3 h o mas. Amarillo: 1 a 3 h. Rojo: menos de 1 h.","Tray: whole hours; minutes when red; seconds in the final minute.\nGreen: 3 h or more. Yellow: 1 to 3 h. Red: less than 1 h."},
         {"Internet disponible. Esperando datos del router; se reintenta cada 30 segundos.","Internet available. Waiting for router data; retrying every 30 seconds."},
         {"Reiniciar router","Restart router"},
         {"Se cortara Internet para todos los dispositivos durante varios minutos.\nEl contador se ajustara al leer la nueva sesion.\n\nReiniciar este router?","Internet will disconnect for all devices for several minutes.\nThe countdown will adjust when the new session is read.\n\nRestart this router?"},

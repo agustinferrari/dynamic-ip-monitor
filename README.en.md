@@ -5,21 +5,21 @@
 A Windows countdown that warns you before a possible Internet reconnection.
 Useful before starting a race or an online match.
 
-**Version 0.4.1-beta.** Direct session reading has been tested with an **Antel ZTE
+**Version 0.5.0-beta.** Direct session reading has been tested with an **Antel ZTE
 F6600**. Other models or firmware may need a different adapter. Public IP monitoring
 works with other routers, with less accurate timing. This is an independent
 project, not affiliated with Antel or ZTE.
 
 ## Download and start
 
-1. Open this repository's **Releases** and download `DynamicIPMonitor-0.4.1-beta-windows.zip`.
+1. Open this repository's **Releases** and download `DynamicIPMonitor-0.5.0-beta-windows.zip`.
 2. Extract the ZIP and run `DynamicIPMonitor.exe`.
 3. Choose **Settings → Language**: Español, English, or Automatic (Windows).
 4. Allow router reading if you have a compatible F6600. Check its local URL;
    the suggested address is `http://192.168.1.1/`.
 5. Optional credentials override values prefilled by the router's own login page.
    Leaving them blank works only if the router provides prefilled values.
-6. Adjust the estimated cycle and test notifications.
+6. Open **Show advanced settings** to adjust the cycle, then test notifications.
 
 Requires Windows 10 or 11 and .NET Framework 4.8. No Python, SDK or administrator
 rights are needed to run it. There is no Linux or macOS version. The beta executable
@@ -107,6 +107,13 @@ remain stable across language changes. Operating system error details may use th
 Windows system language.
 
 Licensed under [MIT](LICENSE).
+
+## Main actions
+
+Below the countdown, use **Keep in system tray**, **Refresh now**, or **Settings**.
+**Refresh now** reads the connection without waiting for the next automatic poll.
+Manual reference, cycle length, Windows startup, and local files are under
+**Show advanced settings**. Router restart has a separate section with a warning.
 
 ## Restarting the router
 

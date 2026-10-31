@@ -60,6 +60,7 @@ public class SettingsWindow : Form {
         Text = L.T("Configurar Dynamic IP Monitor"); ClientSize = new Size(560,437);
         FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent; Font = new Font("Segoe UI",10);
+        BackColor = Color.FromArgb(20,26,38); ForeColor = Color.FromArgb(232,238,247);
         AddLabel(L.T("Elegí cómo obtener la referencia de tu conexión."),18,18,520,26);
         enabled = new CheckBox { Text=L.T("Autorizar lectura e inicio de sesión en mi router ZTE F6600"), Location=new Point(18,54), AutoSize=true, Checked=settings.RouterEnabled };
         Controls.Add(enabled);
@@ -75,12 +76,18 @@ public class SettingsWindow : Form {
         var save = new Button { Text=L.T("Guardar"), Location=new Point(320,348), Size=new Size(105,32) };
         var cancel = new Button { Text=L.T("Cancelar"), Location=new Point(435,348), Size=new Size(105,32), DialogResult=DialogResult.Cancel };
         Controls.Add(save); Controls.Add(cancel); AcceptButton=save; CancelButton=cancel;
+        save.FlatStyle=FlatStyle.Flat; save.FlatAppearance.BorderSize=0; save.BackColor=Color.FromArgb(46,109,180); save.ForeColor=Color.White;
+        cancel.FlatStyle=FlatStyle.Flat; cancel.FlatAppearance.BorderColor=Color.FromArgb(65,83,109); cancel.BackColor=Color.FromArgb(34,46,65);
         foreach (Control control in Controls) if (control.Top >= 54) control.Top += 42;
         AddLabel(L.T("Idioma"),18,54,170,26);
         language = new ComboBox { Location=new Point(190,51), Width=350, DropDownStyle=ComboBoxStyle.DropDownList };
         language.Items.AddRange(new object[] { L.T("Automático (Windows)"), "Español", "English" });
         language.SelectedIndex = settings.Language == "es" ? 1 : settings.Language == "en" ? 2 : 0;
         Controls.Add(language);
+        language.TabIndex=0; enabled.TabIndex=1; url.TabIndex=2; username.TabIndex=3;
+        password.TabIndex=4; clearPassword.TabIndex=5; save.TabIndex=6; cancel.TabIndex=7;
+        enabled.CheckedChanged += delegate { UpdateRouterFields(); };
+        UpdateRouterFields();
         L.Capture(this); L.Apply(this);
         language.SelectedIndexChanged += delegate {
             L.SetLanguage(language.SelectedIndex == 1 ? "es" : language.SelectedIndex == 2 ? "en" : "auto");
@@ -97,6 +104,7 @@ public class SettingsWindow : Form {
             } catch (Exception ex) { MessageBox.Show(this, ex.Message,L.T("No se pudo guardar")); }
         };
     }
+    void UpdateRouterFields() { url.Enabled=username.Enabled=password.Enabled=clearPassword.Enabled=enabled.Checked; }
     void AddLabel(string text,int x,int y,int w,int h) { Controls.Add(new Label { Text=text, Location=new Point(x,y), Size=new Size(w,h) }); }
     TextBox AddText(string text,int x,int y) { var t=new TextBox { Text=text, Location=new Point(x,y), Width=350 }; Controls.Add(t); return t; }
 }

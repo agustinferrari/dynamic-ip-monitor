@@ -22,6 +22,10 @@ public class MonitorWindow : Form {
     BackgroundWorker worker;
     BackgroundWorker restartWorker;
     Button restartButton;
+    Button refreshButton, advancedButton;
+    Panel advancedPanel;
+    Label trayHelp, routerHelp;
+    bool advancedExpanded;
     DateTime restartResumeUtc;
     bool awaitingRouter;
     RouterReader router;
@@ -39,50 +43,78 @@ public class MonitorWindow : Form {
         router = new RouterReader(settings);
         state = LoadState();
         Text = L.T("Dynamic IP Monitor - aviso de reconexion");
-        ClientSize = new Size(650, 550);
-        MinimumSize = new Size(666, 589);
+        ClientSize = new Size(700, 650);
+        MinimumSize = new Size(716, 560);
+        AutoScroll = true;
+        DoubleBuffered = true;
         Font = new Font("Segoe UI", 10);
         BackColor = Color.FromArgb(20, 26, 38);
         ForeColor = Color.FromArgb(232, 238, 247);
         Icon = SystemIcons.Information;
 
-        Label title = LabelAt(L.T("PROXIMO CAMBIO ESTIMADO"), 24, 23, 600, 30);
+        Label title = LabelAt(L.T("Próximo cambio estimado"), 24, 20, 632, 26);
         title.ForeColor = Color.FromArgb(135, 167, 204);
-        clockLabel = LabelAt("--:--:--", 20, 58, 610, 80);
+        clockLabel = LabelAt("--:--:--", 20, 48, 636, 80);
         clockLabel.Font = countdownFont;
-        estimateLabel = LabelAt("", 24, 145, 600, 30);
-        infoLabel = LabelAt("", 24, 180, 600, 65);
-        statusLabel = LabelAt("", 24, 250, 600, 45);
-        statusLabel.ForeColor = Color.FromArgb(150, 183, 210);
-
-        LabelAt(L.T("Inicio de sesion (hora local):"), 24, 310, 215, 28);
-        manual = new DateTimePicker { Location = new Point(240,310), Size = new Size(225,27), Format = DateTimePickerFormat.Custom, CustomFormat = "dd/MM/yyyy HH:mm:ss", Value = state.AnchorUtc == DateTime.MinValue ? DateTime.Now : state.AnchorUtc.ToLocalTime() };
-        Controls.Add(manual);
-        Button apply = ButtonAt(L.T("Usar esta hora"), 475, 307, 148);
-        apply.Click += delegate { if (manual.Value > DateTime.Now.AddSeconds(5)) { MessageBox.Show(L.T("El ultimo inicio no puede estar en el futuro.")); return; } state.AnchorUtc = manual.Value.ToUniversalTime(); state.Quality = "Referencia manual (el router la reemplaza si esta habilitado)"; state.RouterVerified = false; state.AlertKey = ""; SaveState(); Render(); };
-        LabelAt(L.T("Ciclo estimado (horas):"), 24, 352, 215, 28);
-        hours = new NumericUpDown { Location = new Point(240,352), Width = 75, Minimum = 1, Maximum = 168, DecimalPlaces = 2, Value = (decimal)Math.Max(1, Math.Min(168, state.PeriodHours)) };
-        Controls.Add(hours);
-        hours.ValueChanged += delegate { state.PeriodHours = (double)hours.Value; state.AlertKey = ""; SaveState(); Render(); };
-        top = new CheckBox { Text = L.T("Siempre visible"), Location = new Point(340,352), AutoSize = true };
-        top.CheckedChanged += delegate { TopMost = top.Checked; };
-        Controls.Add(top);
-        startup = new CheckBox { Text = L.T("Iniciar con Windows"), Location = new Point(24,394), AutoSize = true, Checked = IsStartup() };
-        startup.CheckedChanged += StartupChanged;
-        Controls.Add(startup);
-        Button test = ButtonAt(L.T("Probar aviso"), 240, 390, 130);
-        test.Click += delegate { Notify(L.T("Prueba de aviso"), L.T("Los avisos aparecen aqui. Windows puede silenciarlos al jugar o en No molestar.")); };
-        Button hide = ButtonAt(L.T("Ocultar a bandeja"), 390, 390, 180);
+        estimateLabel = LabelAt("", 24, 132, 632, 30);
+        Button hide = ButtonAt(L.T("Seguir en bandeja"), 24, 178, 232);
+        hide.Height = 44; hide.TabIndex = 0;
+        hide.BackColor = Color.FromArgb(46,109,180); hide.FlatAppearance.BorderSize = 0;
         hide.Click += delegate { Hide(); };
-        Button configure = ButtonAt(L.T("Configurar"), 24, 432, 150);
+        refreshButton = ButtonAt(L.T("Actualizar ahora"), 268, 178, 184);
+        refreshButton.Height = 44; refreshButton.TabIndex = 1;
+        refreshButton.Click += delegate { RefreshReading(); };
+        Button configure = ButtonAt(L.T("Configurar"), 464, 178, 192);
+        configure.Height = 44; configure.TabIndex = 2;
         configure.Click += delegate { Configure(); };
-        Button dataFolder = ButtonAt(L.T("Abrir mis datos"), 190, 432, 150);
-        dataFolder.Click += delegate { System.Diagnostics.Process.Start("explorer.exe", "\"" + Dir + "\""); };
-        restartButton = ButtonAt(L.T("Reiniciar router"), 356, 432, 200);
+        statusLabel = LabelAt("", 24, 241, 632, 44);
+        statusLabel.ForeColor = Color.FromArgb(150, 183, 210);
+        infoLabel = LabelAt("", 24, 295, 632, 68);
+        Button test = ButtonAt(L.T("Probar aviso"), 24, 372, 170);
+        test.TabIndex = 3;
+        test.Click += delegate { Notify(L.T("Prueba de aviso"), L.T("Los avisos aparecen aqui. Windows puede silenciarlos al jugar o en No molestar.")); };
+        Label alertsHelp = LabelAt(L.T("Avisos a los 30, 15, 5 y 1 min.\nWindows puede silenciarlos al jugar."), 210, 370, 446, 44);
+        alertsHelp.ForeColor = Color.FromArgb(156,176,199);
+        Controls.Add(new Panel { Location = new Point(24,424), Size = new Size(632,1), BackColor = Color.FromArgb(51,67,91), TabStop = false });
+        Label routerTitle = LabelAt(L.T("Control del router"), 24, 443, 400, 24);
+        routerHelp = LabelAt("", 24, 473, 400, 44);
+        routerHelp.Font = new Font("Segoe UI",9); routerHelp.ForeColor = Color.FromArgb(156,176,199);
+        restartButton = ButtonAt(L.T("Reiniciar router"), 456, 455, 200);
+        restartButton.Height = 40; restartButton.TabIndex = 4;
+        restartButton.BackColor = BackColor; restartButton.ForeColor = Color.FromArgb(244,161,168);
+        restartButton.FlatAppearance.BorderColor = Color.FromArgb(160,83,98);
         restartButton.Click += delegate { RestartRouter(); };
-        Label note = LabelAt(L.T("Icono: horas completas; en rojo, minutos; ultimo minuto, segundos.\nVerde: 3 h o mas. Amarillo: 1 a 3 h. Rojo: menos de 1 h.\nAvisos: 30, 15, 5 y 1 min. El proximo corte es estimado."), 24, 487, 605, 48);
-        note.Font = new Font("Segoe UI", 9);
-        note.ForeColor = Color.FromArgb(156, 168, 188);
+        advancedButton = ButtonAt(L.T("Mostrar ajustes avanzados"), 24, 535, 280);
+        advancedButton.TabIndex = 5;
+        advancedButton.Click += delegate { ToggleAdvanced(); };
+        advancedPanel = new Panel { Location = new Point(24,583), Size = new Size(632,207), Visible = false, TabIndex = 6 };
+        Controls.Add(advancedPanel);
+
+        Label referenceTitle = LabelAt(L.T("Inicio de sesion (hora local):"), 0, 0, 350, 26);
+        advancedPanel.Controls.Add(referenceTitle);
+        manual = new DateTimePicker { Location = new Point(0,30), Size = new Size(270,27), Format = DateTimePickerFormat.Custom, CustomFormat = "dd/MM/yyyy HH:mm:ss", Value = state.AnchorUtc == DateTime.MinValue ? DateTime.Now : state.AnchorUtc.ToLocalTime(), TabIndex = 0 };
+        advancedPanel.Controls.Add(manual);
+        Button apply = ButtonAt(L.T("Usar esta hora"), 284, 27, 180);
+        advancedPanel.Controls.Add(apply); apply.TabIndex = 1;
+        apply.Click += delegate { if (manual.Value > DateTime.Now.AddSeconds(5)) { MessageBox.Show(L.T("El ultimo inicio no puede estar en el futuro.")); return; } state.AnchorUtc = manual.Value.ToUniversalTime(); state.Quality = "Referencia manual (el router la reemplaza si esta habilitado)"; state.RouterVerified = false; state.AlertKey = ""; SaveState(); Render(); };
+        Label periodTitle = LabelAt(L.T("Ciclo estimado (horas):"), 0, 80, 230, 28);
+        advancedPanel.Controls.Add(periodTitle);
+        hours = new NumericUpDown { Location = new Point(240,80), Width = 85, Minimum = 1, Maximum = 168, DecimalPlaces = 2, Value = (decimal)Math.Max(1, Math.Min(168, state.PeriodHours)), TabIndex = 2 };
+        advancedPanel.Controls.Add(hours);
+        hours.ValueChanged += delegate { state.PeriodHours = (double)hours.Value; state.AlertKey = ""; SaveState(); Render(); };
+        top = new CheckBox { Text = L.T("Siempre visible"), Location = new Point(310,125), AutoSize = true, TabIndex = 4 };
+        top.CheckedChanged += delegate { TopMost = top.Checked; };
+        advancedPanel.Controls.Add(top);
+        startup = new CheckBox { Text = L.T("Iniciar con Windows"), Location = new Point(0,125), AutoSize = true, Checked = IsStartup(), TabIndex = 3 };
+        startup.CheckedChanged += StartupChanged;
+        advancedPanel.Controls.Add(startup);
+        Button dataFolder = ButtonAt(L.T("Abrir mis datos"), 0, 164, 200);
+        advancedPanel.Controls.Add(dataFolder); dataFolder.TabIndex = 5;
+        dataFolder.Click += delegate { System.Diagnostics.Process.Start("explorer.exe", "\"" + Dir + "\""); };
+        trayHelp = LabelAt(L.T("Bandeja: horas completas; en rojo, minutos; último minuto, segundos.\nVerde: 3 h o mas. Amarillo: 1 a 3 h. Rojo: menos de 1 h."), 24, 583, 632, 48);
+        trayHelp.Font = new Font("Segoe UI", 9);
+        trayHelp.ForeColor = Color.FromArgb(156,176,199);
+        AutoScrollMinSize = new Size(0,647);
 
         tray = new NotifyIcon { Icon = SystemIcons.Information, Text = "Dynamic IP Monitor", Visible = true };
         var menu = new ContextMenuStrip();
@@ -139,7 +171,23 @@ public class MonitorWindow : Form {
         var label = new Label { Text = text, Location = new Point(x,y), Size = new Size(width,height) }; Controls.Add(label); return label;
     }
     Button ButtonAt(string text, int x, int y, int width) {
-        var b = new Button { Text = text, Location = new Point(x,y), Size = new Size(width,33), BackColor = Color.FromArgb(48,65,90), FlatStyle = FlatStyle.Flat, ForeColor = ForeColor }; Controls.Add(b); return b;
+        var b = new Button { Text = text, Location = new Point(x,y), Size = new Size(width,33), BackColor = Color.FromArgb(34,46,65), FlatStyle = FlatStyle.Flat, ForeColor = ForeColor };
+        b.FlatAppearance.BorderColor = Color.FromArgb(65,83,109);
+        Controls.Add(b); return b;
+    }
+    void ToggleAdvanced() {
+        // Restore logical coordinates before moving scrollable content.
+        AutoScrollPosition = Point.Empty;
+        advancedExpanded = !advancedExpanded;
+        advancedPanel.Visible = advancedExpanded;
+        advancedButton.Tag = advancedExpanded ? "Ocultar ajustes avanzados" : "Mostrar ajustes avanzados";
+        advancedButton.Text = L.T((string)advancedButton.Tag);
+        trayHelp.Top = advancedExpanded ? 812 : 583;
+        AutoScrollMinSize = new Size(0,trayHelp.Bottom + 16);
+    }
+    void RefreshReading() {
+        if (worker.IsBusy || restartWorker.IsBusy || DateTime.UtcNow < restartResumeUtc) return;
+        SetStatus("Actualizando lectura..."); Poll(); Render();
     }
     void ShowWindow() { Show(); WindowState = FormWindowState.Normal; Activate(); }
     void Configure() {
@@ -237,9 +285,12 @@ public class MonitorWindow : Form {
         SaveState(); Render();
     }
     void Render() {
+        routerHelp.Text = L.T(settings.RouterEnabled ? "Reiniciar corta Internet en todos los dispositivos.\nTe pediremos confirmación antes de continuar." : "Habilita la lectura del router en Configurar\npara poder reiniciarlo desde aqui.");
+        refreshButton.Enabled = !worker.IsBusy && !restartWorker.IsBusy && DateTime.UtcNow >= restartResumeUtc;
         restartButton.Enabled = settings.RouterEnabled && !worker.IsBusy && !restartWorker.IsBusy && !awaitingRouter;
         if (awaitingRouter || restartWorker.IsBusy) {
             UpdateTrayIcon(null); clockLabel.Font = expiredFont; clockLabel.Text = L.T("RECONECTANDO...");
+            clockLabel.ForeColor = TrayCountdown.Describe(null).Foreground;
             estimateLabel.Text = L.T("Esperando una nueva lectura del router.");
             infoLabel.Text = L.T("IP publica: ") + (String.IsNullOrEmpty(state.Ip) ? L.T("pendiente") : state.Ip);
             statusLabel.Text = StatusText; tray.Text = L.T("Dynamic IP Monitor - reconectando"); return;
@@ -247,6 +298,7 @@ public class MonitorWindow : Form {
         if (state.AnchorUtc == DateTime.MinValue) {
             UpdateTrayIcon(null);
             clockLabel.Text = L.T("SIN REFERENCIA"); clockLabel.Font = expiredFont;
+            clockLabel.ForeColor = TrayCountdown.Describe(null).Foreground;
             estimateLabel.Text = L.T("Configura el router o indica la hora del ultimo cambio.");
             infoLabel.Text = L.T("IP publica: ") + (String.IsNullOrEmpty(state.Ip) ? L.T("pendiente") : state.Ip) + L.T("\nSin referencia de inicio de sesion.");
             statusLabel.Text = StatusText; tray.Text = L.T("Dynamic IP Monitor - esperando referencia"); return;

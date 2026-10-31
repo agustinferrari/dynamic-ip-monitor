@@ -96,6 +96,10 @@ public static partial class RegressionTests {
             IntPtr handle = window.Handle;
             ((System.Windows.Forms.Timer)WindowField("pollTimer").GetValue(window)).Stop();
             ((System.Windows.Forms.Timer)WindowField("uiTimer").GetValue(window)).Stop();
+            WindowField("restartResumeUtc").SetValue(window, DateTime.UtcNow.AddMinutes(1));
+            typeof(MonitorWindow).GetMethod("RefreshReading", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(window, null);
+            Assert(!((System.ComponentModel.BackgroundWorker)WindowField("worker").GetValue(window)).IsBusy, "manual refresh respects router boot waiting period");
+            WindowField("restartResumeUtc").SetValue(window, DateTime.MinValue);
             WindowField("awaitingRouter").SetValue(window, true);
             var callback = typeof(MonitorWindow).GetMethod("Polled", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             DateTime now = DateTime.UtcNow;

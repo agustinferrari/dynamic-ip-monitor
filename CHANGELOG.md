@@ -1,5 +1,14 @@
 # Historial de cambios
 
+## 0.5.0-beta
+
+- Acciones de uso diario debajo del contador, con mayor prioridad para seguir en bandeja.
+- Botón Actualizar ahora para consultar la conexión sin esperar la lectura periódica.
+- Reinicio del router separado y acompañado por el aviso de corte de Internet.
+- Referencia manual, ciclo, inicio con Windows y archivos agrupados en ajustes avanzados plegables.
+- Mejoras de contraste, orden del teclado, configuración y desplazamiento en ventanas pequeñas.
+- Interfaz revisada en español e inglés; el estado de reconexión usa un color neutral.
+
 ## 0.4.1-beta
 
 - Si el router sigue arrancando, se reintenta la conexión cada 30 segundos en lugar de bloquear el ingreso por 10 minutos.
