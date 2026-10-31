@@ -24,7 +24,7 @@ public static class TrayCountdown {
             Foreground = band == "red" ? Color.FromArgb(255,109,124) : band == "yellow" ? Color.FromArgb(255,194,80) : Color.FromArgb(113,223,183)
         };
         if (seconds <= 0) { state.Top="!"; state.Bottom=""; }
-        else if (seconds < 60) { state.Top=Math.Max(1,(int)Math.Floor(seconds)).ToString(); state.Bottom="s"; }
+        else if (seconds < 60) { state.Top="<1"; state.Bottom="m"; }
         else if (seconds < 3600) { state.Top=((int)remaining.Value.TotalMinutes).ToString(); state.Bottom="m"; }
         else { state.Top=((int)remaining.Value.TotalHours).ToString(); state.Bottom=""; }
         return state;
@@ -38,19 +38,20 @@ public static class TrayCountdown {
             graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             using (var background = new SolidBrush(state.Background))
             using (var white = new SolidBrush(Color.White))
-            using (var shape = new GraphicsPath())
-            using (var format = new StringFormat(StringFormat.GenericTypographic)) {
+            using (var shape = new GraphicsPath()) {
                 shape.AddArc(0,0,6,6,180,90); shape.AddArc(26,0,6,6,270,90);
                 shape.AddArc(26,26,6,6,0,90); shape.AddArc(0,26,6,6,90,90); shape.CloseFigure();
                 graphics.FillPath(background,shape);
-                format.Alignment=StringAlignment.Center; format.LineAlignment=StringAlignment.Center;
-                format.FormatFlags=StringFormatFlags.NoWrap;
-                float fontSize = state.Top.Length >= 3 ? 17 : state.Top.Length == 2 ? 24 : 27;
-                using (var font = new Font("Segoe UI",fontSize,FontStyle.Bold,GraphicsUnit.Pixel))
-                    graphics.DrawString(state.Top,font,white,state.Bottom.Length == 0 ? new RectangleF(0,-1,32,32) : new RectangleF(0,-3,32,29),format);
-                if (state.Bottom.Length > 0)
-                    using (var unitFont = new Font("Segoe UI",9,FontStyle.Bold,GraphicsUnit.Pixel))
-                        graphics.DrawString(state.Bottom,unitFont,white,new RectangleF(0,23,32,9),format);
+                // Number and unit share one baseline, e.g. 45m. Fit the complete
+                // glyph bounds so neither the unit nor three-digit hours clip.
+                using (var family = new FontFamily("Segoe UI"))
+                using (var text = new GraphicsPath()) {
+                    text.AddString(state.Top + state.Bottom,family,(int)FontStyle.Bold,28,PointF.Empty,StringFormat.GenericTypographic);
+                    RectangleF bounds = text.GetBounds();
+                    float scale = Math.Min(1,Math.Min(30 / bounds.Width,26 / bounds.Height));
+                    using (var transform = new Matrix(scale,0,0,scale,(32-bounds.Width*scale)/2-bounds.X*scale,(32-bounds.Height*scale)/2-bounds.Y*scale)) text.Transform(transform);
+                    graphics.FillPath(white,text);
+                }
             }
         }
         return bitmap;

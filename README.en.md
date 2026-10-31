@@ -5,22 +5,22 @@
 A Windows countdown that warns you before a possible Internet reconnection.
 Useful before starting a race or an online match.
 
-![Dynamic IP Monitor main window showing the countdown and monitoring actions](assets/main-window-en.png)
+![Dynamic IP Monitor main window showing the countdown and monitoring actions](assets/main-window-v0.5.2-en.png)
 
 *Application preview with example data.*
 
-![Tray states: hours in green and yellow, minutes in red, expired estimate, and no reference](assets/tray-guide-en.png)
+![Tray states: hours in green and yellow, minutes in red, expired estimate, and no reference](assets/tray-guide-v0.5.2-en.png)
 
 *Icons enlarged to show the colors and units displayed next to the Windows clock.*
 
-**Version 0.5.1-beta.** Direct session reading has been tested with an **Antel ZTE
+**Version 0.5.2-beta.** Direct session reading has been tested with an **Antel ZTE
 F6600**. Other models or firmware may need a different adapter. Public IP monitoring
 works with other routers, with less accurate timing. This is an independent
 project, not affiliated with Antel or ZTE.
 
 ## Download and start
 
-1. Open this repository's **Releases** and download `DynamicIPMonitor-0.5.1-beta-windows.zip`.
+1. Open this repository's **Releases** and download `DynamicIPMonitor-0.5.2-beta-windows.zip`.
 2. Extract the ZIP and run `DynamicIPMonitor.exe`.
 3. Choose **Settings → Language**: Español, English, or Automatic (Windows).
 4. Allow router reading if you have a compatible F6600. Check its local URL;
@@ -43,8 +43,9 @@ for your user account. Disable and re-enable it if you move the executable.
 
 ## Countdown and colors
 
-The tray icon shows a single large number: whole hours when at least one hour
-remains, minutes below one hour, and seconds during the final minute. Green means
+The tray icon shows whole hours when at least one hour remains, and minutes on
+one line below one hour, such as `45m`. The final minute shows `<1m` instead of seconds.
+Green means
 3 hours or more; amber means 1 to 3 hours; red means less than 1 hour. Hover over the
 icon for the full countdown. A gray `?` means no reference; a red `!` means the
 estimated time has passed. Drag the icon out of Windows' hidden-icons menu if you

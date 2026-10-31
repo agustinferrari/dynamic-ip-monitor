@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 0.5.2-beta
+
+- La unidad de minutos aparece junto al número en una sola línea (45m), también en el ícono real de Windows.
+- Durante el último minuto se muestra <1m en lugar de segundos.
+- Ayuda, capturas y documentación actualizadas para reflejar el cambio.
+
 ## 0.5.1-beta
 
 - La casilla Iniciar con Windows queda visible en la ventana principal, fuera de los ajustes avanzados.

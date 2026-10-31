@@ -5,15 +5,15 @@
 Contador para Windows que avisa antes de una posible reconexión de Internet.
 Pensado para evitar empezar una carrera o partida cerca del cambio de sesión.
 
-![Ventana principal de Dynamic IP Monitor con el contador y las acciones de monitoreo](assets/main-window-es.png)
+![Ventana principal de Dynamic IP Monitor con el contador y las acciones de monitoreo](assets/main-window-v0.5.2-es.png)
 
 *Vista de la aplicación con datos de ejemplo.*
 
-![Estados del ícono: horas en verde y amarillo, minutos en rojo, estimación vencida y falta de referencia](assets/tray-guide-es.png)
+![Estados del ícono: horas en verde y amarillo, minutos en rojo, estimación vencida y falta de referencia](assets/tray-guide-v0.5.2-es.png)
 
 *Íconos ampliados para mostrar los colores y las unidades que aparecen junto al reloj de Windows.*
 
-**Versión 0.5.1-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
+**Versión 0.5.2-beta.** La lectura del router se probó con un **ZTE F6600 de Antel**.
 Otros modelos o versiones del firmware pueden requerir otro adaptador. El modo
 de IP pública permite usar el monitor con otros routers, con menor precisión.
 Proyecto independiente, sin afiliación con Antel ni ZTE.
@@ -25,7 +25,7 @@ se guarda localmente. Incluye interfaz, menús de bandeja, avisos y fechas.
 
 ## Descargar y usar
 
-1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.5.1-beta-windows.zip`.
+1. Abrí **Releases** en este repositorio y descargá `DynamicIPMonitor-0.5.2-beta-windows.zip`.
 2. Extraé el ZIP en una carpeta y ejecutá `DynamicIPMonitor.exe`.
 3. En la primera apertura elegí si autorizás la lectura de tu router o preferís solo IP pública.
 4. Si usás un F6600 compatible, revisá su dirección. El valor sugerido es `http://192.168.1.1/`.
@@ -39,9 +39,9 @@ El ejecutable de esta beta no tiene firma de código; Windows puede mostrar una
 advertencia de editor desconocido. El código fuente y el proceso de compilación
 están disponibles para revisarlos.
 
-El ícono junto al reloj muestra un único número grande: **horas completas** mientras
-falte una hora o más, **minutos** cuando está en rojo y **segundos** durante el último
-minuto. Por ejemplo, 11 h 37 min se muestra como `11`. Cambia a **verde con 3 h o más**, **amarillo entre 1 y 3 h**
+El ícono junto al reloj muestra **horas completas** mientras falte una hora o más,
+y **minutos en una sola línea** cuando está en rojo: `45m`. Durante el último minuto
+muestra `<1m`, sin cambiar a segundos. Por ejemplo, 11 h 37 min se muestra como `11`. Cambia a **verde con 3 h o más**, **amarillo entre 1 y 3 h**
 y **rojo con menos de 1 h**. Al pasar el mouse muestra el tiempo completo, incluidos
 los segundos. Un `?` gris significa que falta una referencia y un `!` rojo indica
 que la hora estimada ya pasó. Si Windows lo oculta, arrastralo desde el menú de

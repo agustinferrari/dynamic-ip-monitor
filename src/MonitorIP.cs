@@ -111,7 +111,7 @@ public class MonitorWindow : Form {
         Button dataFolder = ButtonAt(L.T("Abrir mis datos"), 0, 164, 200);
         advancedPanel.Controls.Add(dataFolder); dataFolder.TabIndex = 5;
         dataFolder.Click += delegate { System.Diagnostics.Process.Start("explorer.exe", "\"" + Dir + "\""); };
-        trayHelp = LabelAt(L.T("Bandeja: horas completas; en rojo, minutos; último minuto, segundos.\nVerde: 3 h o mas. Amarillo: 1 a 3 h. Rojo: menos de 1 h."), 24, 583, 632, 48);
+        trayHelp = LabelAt(L.T("Bandeja: horas completas; en rojo, minutos (45m); último minuto, <1m.\nVerde: 3 h o mas. Amarillo: 1 a 3 h. Rojo: menos de 1 h."), 24, 583, 632, 48);
         trayHelp.Font = new Font("Segoe UI", 9);
         trayHelp.ForeColor = Color.FromArgb(156,176,199);
         AutoScrollMinSize = new Size(0,647);

@@ -52,7 +52,10 @@ public static partial class RegressionTests {
         var hours=TrayCountdown.Describe(new TimeSpan(11,37,25));
         Assert(hours.Top == "11" && hours.Bottom == "","whole hours only");
         Assert(hours.Key == TrayCountdown.Describe(new TimeSpan(11,12,0)).Key,"avoid unnecessary icon redraws");
-        Assert(TrayCountdown.Describe(TimeSpan.FromSeconds(45)).Bottom == "s","final seconds");
+        var finalMinute = TrayCountdown.Describe(TimeSpan.FromSeconds(45));
+        Assert(finalMinute.Top + finalMinute.Bottom == "<1m","final minute stays in minutes");
+        Assert(finalMinute.Key == TrayCountdown.Describe(TimeSpan.FromSeconds(1)).Key,"final minute does not change every second");
+        Assert(TrayCountdown.Describe(TimeSpan.FromMinutes(1)).Top + TrayCountdown.Describe(TimeSpan.FromMinutes(1)).Bottom == "1m","one minute boundary");
         Assert(TrayCountdown.Describe(TimeSpan.Zero).Top == "!","expired marker");
         Assert(TrayCountdown.Describe(null).Top == "?","unknown marker");
         foreach (TimeSpan? remaining in new TimeSpan?[] { null, TimeSpan.Zero, TimeSpan.FromSeconds(45), TimeSpan.FromMinutes(59), TimeSpan.FromHours(168) }) {
