@@ -104,5 +104,4 @@ message and use `L.T` for displayed text. Raw CSV columns and technical test log
 remain stable across language changes. Operating system error details may use the
 Windows system language.
 
-Licensed under [MIT](LICENSE). See [PUBLICAR.md](PUBLICAR.md) for publication steps
-in Spanish.
+Licensed under [MIT](LICENSE).

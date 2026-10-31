@@ -120,5 +120,4 @@ si ofrece duración de la sesión WAN. No publiques contraseñas, cookies, token
 números de serie ni respuestas completas de los paneles. Los parsers pueden
 probarse con muestras sintéticas sin datos de conexiones reales.
 
-Licencia [MIT](LICENSE). Instrucciones para la primera publicación:
-[PUBLICAR.md](PUBLICAR.md).
+Licencia [MIT](LICENSE).
